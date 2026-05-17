@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from routers import frequent_words
+from routers import clump_finding, frequent_words, mismatches, skew
 
 app = FastAPI(title="Replikacija genoma")
 
@@ -13,6 +13,9 @@ app.add_middleware(
 )
 
 app.include_router(frequent_words.router)
+app.include_router(clump_finding.router)
+app.include_router(skew.router)
+app.include_router(mismatches.router)
 
 @app.get("/api/health")
 def health():

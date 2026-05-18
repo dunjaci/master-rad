@@ -439,7 +439,7 @@ export default function MismatchesClient() {
       <section className="mx-auto max-w-6xl px-5 py-8 lg:px-8">
         <header className="rounded-lg border border-slate-200 bg-white p-6 shadow-sm md:p-7">
           <p className="text-sm font-semibold uppercase tracking-[0.22em] text-blue-700">
-            Mismatches
+            Propusti
           </p>
           <h1 className="mt-3 text-3xl font-extrabold leading-tight tracking-tight md:text-4xl">
             Približno poklapanje sekvenci i česte reči sa propustima
@@ -497,8 +497,11 @@ export default function MismatchesClient() {
                 </p>
                 <h2 className="mt-2 text-2xl font-bold">{activeData.title}</h2>
               </div>
-              <span className="rounded-full bg-slate-100 px-3 py-1 font-mono text-sm font-bold text-slate-700">
-                {activeSection === "hamming" ? "O(k)" : activeSection === "matching" ? "O(|Text| * k)" : "zavisno od |Neighbors|"}
+              <span className="rounded-full bg-slate-100 px-3 py-1 text-sm font-semibold text-slate-700">
+                Vremenska složenost:{" "}
+                <span className="font-mono font-bold">
+                  {activeSection === "hamming" ? "O(k)" : activeSection === "matching" ? "O(|Tekst| * k)" : "zavisno od |Susedstvo|"}
+                </span>
               </span>
             </div>
             <pre className="mt-4 max-h-[300px] overflow-auto rounded-lg bg-slate-950 p-4 text-sm leading-6 text-slate-100">
@@ -515,13 +518,15 @@ export default function MismatchesClient() {
                 <h2 className="mt-2 text-2xl font-bold">{activeData.title}</h2>
                 <p className="mt-1 text-sm text-slate-500">{activeData.text}</p>
               </div>
-              <button
-                className="rounded-lg bg-slate-950 px-4 py-2 text-sm font-bold text-white transition hover:bg-blue-700"
-                onClick={resetStep}
-                type="button"
-              >
-                Pokreni od početka
-              </button>
+              {activeSection !== "hamming" && (
+                <button
+                  className="rounded-lg bg-slate-950 px-4 py-2 text-sm font-bold text-white transition hover:bg-blue-700"
+                  onClick={resetStep}
+                  type="button"
+                >
+                  Pokreni od početka
+                </button>
+              )}
             </div>
 
             <div className="mt-5 grid gap-4 rounded-lg bg-slate-50 p-4">
@@ -549,7 +554,7 @@ export default function MismatchesClient() {
               {activeSection === "matching" && (
                 <>
                   <label className="grid gap-2 text-sm font-semibold text-slate-700">
-                    Text
+                    Tekst
                     <textarea
                       className="min-h-20 rounded-lg border border-slate-200 bg-white p-3 font-mono text-sm font-medium outline-none transition focus:border-blue-400 focus:ring-4 focus:ring-blue-100"
                       onChange={(event) => {
@@ -561,7 +566,7 @@ export default function MismatchesClient() {
                   </label>
                   <div className="grid gap-4 md:grid-cols-2">
                     <label className="grid gap-2 text-sm font-semibold text-slate-700">
-                      Pattern
+                      Obrazac
                       <input
                         className="rounded-lg border border-slate-200 p-3 font-mono outline-none transition focus:border-blue-400 focus:ring-4 focus:ring-blue-100"
                         onChange={(event) => {
@@ -591,7 +596,7 @@ export default function MismatchesClient() {
               {activeSection === "neighbors" && (
                 <div className="grid gap-4 md:grid-cols-2">
                   <label className="grid gap-2 text-sm font-semibold text-slate-700">
-                    Pattern
+                    Obrazac
                     <input
                       className="rounded-lg border border-slate-200 p-3 font-mono outline-none transition focus:border-blue-400 focus:ring-4 focus:ring-blue-100"
                       onChange={(event) => {
@@ -620,7 +625,7 @@ export default function MismatchesClient() {
               {(activeSection === "frequent" || activeSection === "reverse") && (
                 <>
                   <label className="grid gap-2 text-sm font-semibold text-slate-700">
-                    Text
+                    Tekst
                     <textarea
                       className="min-h-20 rounded-lg border border-slate-200 bg-white p-3 font-mono text-sm font-medium outline-none transition focus:border-blue-400 focus:ring-4 focus:ring-blue-100"
                       onChange={(event) => {
@@ -667,10 +672,10 @@ export default function MismatchesClient() {
                 {activeSection === "hamming"
                   ? "Unesi dve DNK sekvence iste dužine."
                   : activeSection === "matching"
-                    ? "Unesi Text, Pattern koji nije duži od Text i dozvoljeni broj odstupanja d."
+                    ? "Unesi tekst i obrazac koji nije duži od teksta, uz dozvoljeni broj odstupanja d."
                     : activeSection === "neighbors"
-                      ? "Unesi Pattern i vrednost d koja nije veća od dužine obrasca."
-                      : "Unesi Text, k do 8 i vrednost d koja nije veća od k."}
+                      ? "Unesi obrazac i vrednost d koja nije veća od dužine obrasca."
+                      : "Unesi tekst, k do 8 i vrednost d koja nije veća od k."}
               </div>
             )}
 
@@ -721,7 +726,7 @@ export default function MismatchesClient() {
               <div className="mt-5 space-y-4">
                 <div className="grid gap-3 md:grid-cols-3">
                   <div className="rounded-lg bg-slate-50 p-3">
-                    <p className="text-sm text-slate-500">Pattern</p>
+                    <p className="text-sm text-slate-500">Obrazac</p>
                     <p className="mt-1 font-mono text-2xl font-bold">{cleanedPattern}</p>
                   </div>
                   <div className="rounded-lg bg-blue-50 p-3">
@@ -734,7 +739,7 @@ export default function MismatchesClient() {
                   </div>
                 </div>
                 <div className="rounded-lg border border-slate-200 p-4">
-                  <p className="font-semibold">Neighbors(Pattern, d)</p>
+                  <p className="font-semibold">Susedstvo(obrazac, d)</p>
                   <p className="mt-2 text-sm leading-6 text-slate-600">
                     Susedstvo sadrži sve sekvence iste dužine koje su udaljene najviše d
                     pozicija od početnog obrasca.

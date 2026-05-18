@@ -4,10 +4,10 @@ import Link from "next/link";
 
 const lessons = [
   { href: "/teorija", label: "Teorijske osnove" },
-  { href: "/frequent-words", label: "Frequent Words" },
-  { href: "/clump-finding", label: "Clump Finding" },
-  { href: "/skew", label: "GC-skew" },
-  { href: "/mismatches", label: "Mismatches" },
+  { href: "/frequent-words", label: "Česte reči" },
+  { href: "/clump-finding", label: "Pronalaženje grupa" },
+  { href: "/skew", label: "GC-skew dijagram" },
+  { href: "/mismatches", label: "Propusti" },
   { href: "/literatura", label: "Literatura" },
 ];
 

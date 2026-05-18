@@ -83,14 +83,14 @@ const approaches = [
     id: "naive",
     title: "Naivni pristup",
     badge: "računa svaki prozor",
-    complexity: "O((|Genome| - L + 1) * (4^k + L * k))",
+    complexity: "O((|Genom| - L + 1) * (4^k + L * k))",
     text: "Za svaki prozor dužine L iznova računa frekvencije svih k-mera i označava one koji se pojavljuju bar t puta.",
   },
   {
     id: "better",
     title: "Optimizacija kliznog prozora",
     badge: "ažurira dve vrednosti",
-    complexity: "O(4^k + |Genome| * k)",
+    complexity: "O(4^k + |Genom| * k)",
     text: "Prvi prozor se obradi jednom, a zatim se pri svakom pomeranju smanji frekvencija k-mera koji izlazi i poveća frekvencija k-mera koji ulazi.",
   },
 ];
@@ -284,7 +284,7 @@ export default function ClumpFindingClient() {
       <section className="mx-auto max-w-6xl px-5 py-8 lg:px-8">
         <header className="rounded-lg border border-slate-200 bg-white p-6 shadow-sm md:p-7">
           <p className="text-sm font-semibold uppercase tracking-[0.22em] text-blue-700">
-            Clump Finding Problem
+            Problem pronalaženja grupa
           </p>
           <h1 className="mt-3 text-3xl font-extrabold leading-tight tracking-tight md:text-4xl">
             Problem pronalaženja grupa
@@ -323,8 +323,11 @@ export default function ClumpFindingClient() {
               </span>
               <h2 className="mt-3 text-xl font-bold">{approach.title}</h2>
               <p className="mt-3 leading-7 text-slate-600">{approach.text}</p>
-              <p className="mt-4 font-mono text-sm font-bold text-slate-800">
-                {approach.complexity}
+              <p className="mt-4 text-sm font-semibold text-slate-500">
+                Vremenska složenost:{" "}
+                <span className="font-mono font-bold text-slate-800">
+                  {approach.complexity}
+                </span>
               </p>
             </button>
           ))}
@@ -339,8 +342,9 @@ export default function ClumpFindingClient() {
                 </p>
                 <h2 className="mt-2 text-2xl font-bold">{activeApproachData.title}</h2>
               </div>
-              <span className="rounded-full bg-slate-100 px-3 py-1 font-mono text-sm font-bold text-slate-700">
-                {activeApproachData.complexity}
+              <span className="rounded-full bg-slate-100 px-3 py-1 text-sm font-semibold text-slate-700">
+                Vremenska složenost:{" "}
+                <span className="font-mono font-bold">{activeApproachData.complexity}</span>
               </span>
             </div>
             <pre className="mt-4 max-h-[300px] overflow-auto rounded-lg bg-slate-950 p-4 text-sm leading-6 text-slate-100">
@@ -368,7 +372,7 @@ export default function ClumpFindingClient() {
 
             <div className="mt-5 grid gap-4 rounded-lg bg-slate-50 p-4">
               <label className="grid gap-2 text-sm font-semibold text-slate-700">
-                Genome
+                DNK sekvenca
                 <textarea
                   className="min-h-20 rounded-lg border border-slate-200 bg-white p-3 font-mono text-sm font-medium outline-none transition focus:border-blue-400 focus:ring-4 focus:ring-blue-100"
                   onChange={(event) => {
@@ -424,7 +428,7 @@ export default function ClumpFindingClient() {
 
             {invalid && (
               <div className="mt-5 rounded-lg border border-red-200 bg-red-50 p-4 text-sm font-semibold text-red-700">
-                Unesi DNK sekvencu sa slovima A, C, G i T, uz uslov k &lt;= L &lt;= |Genome|.
+                Unesi DNK sekvencu sa slovima A, C, G i T, uz uslov k &lt;= L &lt;= |Genom|.
               </div>
             )}
 

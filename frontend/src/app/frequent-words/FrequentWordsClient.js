@@ -111,160 +111,34 @@ const approaches = [
     id: "naive",
     title: "Naivni algoritam",
     badge: "osnovni pristup",
-    complexity: "O(|Text|² · k)",
+    complexity: "O(|Tekst|² · k)",
     text: "Za svaki k-mer ponovo prolazi kroz celu sekvencu i računa koliko se puta pojavljuje. Dobar je za razumevanje problema, ali je spor za duge genome.",
   },
   {
     id: "array",
     title: "Optimizacija nizom frekvencija",
     badge: "mapiranje u brojeve",
-    complexity: "O(|Text| · k + 4^k)",
+    complexity: "O(|Tekst| · k + 4^k)",
     text: "Svaki k-mer se prevodi u broj, a broj pojavljivanja se čuva u nizu frekvencija. Brzo radi za manje vrednosti k, ali niz raste kao 4^k.",
   },
   {
     id: "dict",
     title: "Optimizacija heš mapom",
     badge: "čuva samo viđene k-mere",
-    complexity: "O(|Text| · k)",
+    complexity: "O(|Tekst| · k)",
     text: "Umesto celog niza dužine 4^k, koristi se rečnik koji pamti samo k-mere koji se zaista pojavljuju u sekvenci.",
   },
   {
     id: "sorting",
     title: "Pristup sortiranjem",
     badge: "grupisanje jednakih indeksa",
-    complexity: "O(|Text| log |Text| + |Text| · k)",
+    complexity: "O(|Tekst| log |Tekst| + |Tekst| · k)",
     text: "Svi k-meri se pretvaraju u brojeve, zatim se ti brojevi sortiraju. Jednaki k-meri tada stoje jedan do drugog, pa se frekvencije dobijaju brojanjem dužina grupa.",
   },
 ];
 
 function cleanDna(value) {
   return value.replace(/\s+/g, "").toUpperCase().replace(/[^ACGT]/g, "");
-}
-
-function symbolToNumber(symbol) {
-  return { A: 0, T: 1, C: 2, G: 3 }[symbol];
-}
-
-function numberToSymbol(number) {
-  return ["A", "T", "C", "G"][number];
-}
-
-function patternToNumber(pattern) {
-  return pattern.split("").reduce((value, symbol) => value * 4 + symbolToNumber(symbol), 0);
-}
-
-function numberToPattern(number, k) {
-  let pattern = "";
-  let current = number;
-
-  for (let i = 0; i < k; i += 1) {
-    pattern = numberToSymbol(current % 4) + pattern;
-    current = Math.floor(current / 4);
-  }
-
-  return pattern;
-}
-
-function countOccurrences(text, pattern) {
-  let count = 0;
-  const positions = [];
-
-  for (let i = 0; i <= text.length - pattern.length; i += 1) {
-    if (text.slice(i, i + pattern.length) === pattern) {
-      count += 1;
-      positions.push(i);
-    }
-  }
-
-  return { count, positions };
-}
-
-function analyzeFrequentWords(text, k) {
-  const windows = [];
-  const countsByPattern = {};
-  const runningDict = {};
-  const maxLength = Math.max(0, text.length - k + 1);
-
-  for (let i = 0; i < maxLength; i += 1) {
-    const pattern = text.slice(i, i + k);
-    const { count, positions } = countOccurrences(text, pattern);
-    runningDict[pattern] = (runningDict[pattern] || 0) + 1;
-    windows.push({
-      index: i,
-      pattern,
-      count,
-      positions,
-      numericIndex: patternToNumber(pattern),
-      runningCount: runningDict[pattern],
-    });
-    countsByPattern[pattern] = Math.max(countsByPattern[pattern] || 0, count);
-  }
-
-  const maxCount = Math.max(0, ...Object.values(countsByPattern));
-  const frequentPatterns = Object.entries(countsByPattern)
-    .filter(([, count]) => count === maxCount)
-    .map(([pattern]) => pattern)
-    .sort();
-
-  const dictEntries = Object.entries(
-    windows.reduce((acc, item) => {
-      acc[item.pattern] = (acc[item.pattern] || 0) + 1;
-      return acc;
-    }, {}),
-  ).sort(([a], [b]) => a.localeCompare(b));
-
-  const sortedIndex = windows
-    .map((item) => ({
-      index: item.numericIndex,
-      pattern: item.pattern,
-      originalPosition: item.index,
-    }))
-    .sort((a, b) => a.index - b.index || a.originalPosition - b.originalPosition);
-
-  const sortedGroups = [];
-  sortedIndex.forEach((item) => {
-    const previous = sortedGroups[sortedGroups.length - 1];
-    if (previous && previous.index === item.index) {
-      previous.count += 1;
-      previous.positions.push(item.originalPosition);
-    } else {
-      sortedGroups.push({
-        index: item.index,
-        pattern: item.pattern,
-        count: 1,
-        positions: [item.originalPosition],
-      });
-    }
-  });
-
-  const frequencyArraySize = 4 ** k;
-  const canShowArray = frequencyArraySize <= 256;
-  const frequencyArray = canShowArray
-    ? Array.from({ length: frequencyArraySize }, (_, index) => ({
-        index,
-        pattern: numberToPattern(index, k),
-        count: 0,
-      }))
-    : [];
-
-  if (canShowArray) {
-    windows.forEach((item) => {
-      frequencyArray[item.numericIndex].count += 1;
-    });
-  }
-
-  return {
-    canShowArray,
-    countsByPattern,
-    dictEntries,
-    frequentPatterns,
-    frequencyArray,
-    frequencyArraySize,
-    maxCount,
-    sortedGroups,
-    sortedIndex,
-    windows,
-  };
 }
 
 function TextWindow({ text, activeStart, k }) {
@@ -606,10 +480,7 @@ export default function FrequentWordsClient() {
   const cleanedText = useMemo(() => cleanDna(text), [text]);
   const safeK = Math.max(1, Number(k) || 1);
   const invalid = cleanedText.length === 0 || safeK > cleanedText.length;
-  const analysis = useMemo(
-    () => (invalid ? null : analyzeFrequentWords(cleanedText, safeK)),
-    [cleanedText, safeK, invalid],
-  );
+  const analysis = invalid ? null : apiResult?.analysis;
   const activeStep = analysis?.windows[Math.min(step, analysis.windows.length - 1)];
   const activeApproachData = approaches.find((item) => item.id === activeApproach);
   const resultPatterns = apiResult?.patterns || [];
@@ -631,6 +502,7 @@ export default function FrequentWordsClient() {
     }
 
     const controller = new AbortController();
+    Promise.resolve().then(() => setApiResult(null));
     Promise.resolve().then(() => setApiError(false));
     fetch(`${API_BASE}/api/frequent-words`, {
       body: JSON.stringify({ genome: cleanedText, k: safeK }),
@@ -672,7 +544,7 @@ export default function FrequentWordsClient() {
       <section className="mx-auto max-w-6xl px-5 py-8 lg:px-8">
         <header className="rounded-lg border border-slate-200 bg-white p-6 shadow-sm md:p-7">
           <p className="text-sm font-semibold uppercase tracking-[0.22em] text-blue-700">
-            Frequent Words Problem
+            Problem čestih reči
           </p>
           <h1 className="mt-3 text-3xl font-extrabold leading-tight tracking-tight md:text-4xl">
             Problem čestih reči
@@ -713,8 +585,11 @@ export default function FrequentWordsClient() {
               </span>
               <h2 className="mt-3 text-xl font-bold">{approach.title}</h2>
               <p className="mt-3 leading-7 text-slate-600">{approach.text}</p>
-              <p className="mt-4 font-mono text-sm font-bold text-slate-800">
-                {approach.complexity}
+              <p className="mt-4 text-sm font-semibold text-slate-500">
+                Vremenska složenost:{" "}
+                <span className="font-mono font-bold text-slate-800">
+                  {approach.complexity}
+                </span>
               </p>
             </button>
           ))}
@@ -729,8 +604,9 @@ export default function FrequentWordsClient() {
                 </p>
                 <h2 className="mt-2 text-2xl font-bold">{activeApproachData.title}</h2>
               </div>
-              <span className="rounded-full bg-slate-100 px-3 py-1 font-mono text-sm font-bold text-slate-700">
-                {activeApproachData.complexity}
+              <span className="rounded-full bg-slate-100 px-3 py-1 text-sm font-semibold text-slate-700">
+                Vremenska složenost:{" "}
+                <span className="font-mono font-bold">{activeApproachData.complexity}</span>
               </span>
             </div>
             <pre className="mt-4 max-h-[300px] overflow-auto rounded-lg bg-slate-950 p-4 text-sm leading-6 text-slate-100">
@@ -784,7 +660,7 @@ export default function FrequentWordsClient() {
                   />
                 </label>
                 <p className="pb-3 text-sm text-slate-500">
-                  |Text| = <span className="font-mono font-bold">{cleanedText.length}</span>
+                  |Tekst| = <span className="font-mono font-bold">{cleanedText.length}</span>
                 </p>
               </div>
             </div>

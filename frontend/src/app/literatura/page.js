@@ -24,7 +24,28 @@ const references = [
     note: "Glavni izvor za algoritme: frequent words, clump finding, skew i mismatches.",
     url: "https://www.bioinformaticsalgorithms.org/",
   },
+  {
+    id: 4,
+    authors: "Dunja Čitlučanin",
+    title: "GitHub repozitorijum elektronske lekcije",
+    details: "Izvorni kod aplikacije i tekstualna verzija rada.",
+    note: "Repozitorijum sadrži implementaciju frontend aplikacije, backend API-ja, prateće projektne fajlove i tekstualnu verziju master rada.",
+    url: "https://github.com/dunjaci/master-rad",
+  },
 ];
+
+function GitHubIcon() {
+  return (
+    <svg
+      aria-hidden="true"
+      className="h-4 w-4"
+      fill="currentColor"
+      viewBox="0 0 24 24"
+    >
+      <path d="M12 2C6.48 2 2 6.58 2 12.26c0 4.53 2.87 8.37 6.84 9.73.5.1.68-.22.68-.49v-1.9c-2.78.62-3.37-1.22-3.37-1.22-.45-1.2-1.11-1.51-1.11-1.51-.91-.64.07-.63.07-.63 1 .07 1.53 1.06 1.53 1.06.9 1.57 2.36 1.12 2.93.86.09-.67.35-1.12.63-1.38-2.22-.26-4.55-1.14-4.55-5.07 0-1.12.39-2.04 1.03-2.76-.1-.26-.45-1.3.1-2.72 0 0 .84-.27 2.75 1.05A9.3 9.3 0 0 1 12 6.94c.85 0 1.7.12 2.5.34 1.91-1.32 2.75-1.05 2.75-1.05.55 1.42.2 2.46.1 2.72.64.72 1.03 1.64 1.03 2.76 0 3.94-2.34 4.8-4.57 5.06.36.32.68.94.68 1.9v2.83c0 .27.18.59.69.49A10.1 10.1 0 0 0 22 12.26C22 6.58 17.52 2 12 2Z" />
+    </svg>
+  );
+}
 
 export default function Literatura() {
   return (
@@ -69,11 +90,12 @@ export default function Literatura() {
                 </div>
 
                 <a
-                  className="inline-flex items-center justify-center rounded-lg border border-slate-200 px-4 py-2 text-sm font-bold text-slate-800 transition hover:border-blue-300 hover:bg-blue-50 hover:text-blue-700"
+                  className="inline-flex items-center justify-center gap-2 rounded-lg border border-slate-200 px-4 py-2 text-sm font-bold text-slate-800 transition hover:border-blue-300 hover:bg-blue-50 hover:text-blue-700"
                   href={reference.url}
                   rel="noreferrer"
                   target="_blank"
                 >
+                  {reference.url.includes("github.com") && <GitHubIcon />}
                   Otvori link
                 </a>
               </article>

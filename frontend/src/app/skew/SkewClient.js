@@ -305,8 +305,8 @@ export default function SkewClient() {
                 </p>
                 <h2 className="mt-2 text-2xl font-bold">Izračunavanje GC-skew vrednosti</h2>
               </div>
-              <span className="rounded-full bg-slate-100 px-3 py-1 font-mono text-sm font-bold text-slate-700">
-                O(|Genome|)
+              <span className="rounded-full bg-slate-100 px-3 py-1 text-sm font-semibold text-slate-700">
+                Vremenska složenost: <span className="font-mono font-bold">O(|Genom|)</span>
               </span>
             </div>
             <pre className="mt-4 max-h-[300px] overflow-auto rounded-lg bg-slate-950 p-4 text-sm leading-6 text-slate-100">
@@ -336,7 +336,7 @@ export default function SkewClient() {
 
             <div className="mt-5 grid gap-4 rounded-lg bg-slate-50 p-4">
               <label className="grid gap-2 text-sm font-semibold text-slate-700">
-                Genome
+                DNK sekvenca
                 <textarea
                   className="min-h-20 rounded-lg border border-slate-200 bg-white p-3 font-mono text-sm font-medium outline-none transition focus:border-blue-400 focus:ring-4 focus:ring-blue-100"
                   onChange={(event) => {
@@ -347,7 +347,7 @@ export default function SkewClient() {
                 />
               </label>
               <p className="text-sm text-slate-500">
-                |Genome| = <span className="font-mono font-bold">{cleanedGenome.length}</span>
+                |Genom| = <span className="font-mono font-bold">{cleanedGenome.length}</span>
               </p>
             </div>
 

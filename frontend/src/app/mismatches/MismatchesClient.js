@@ -7,7 +7,7 @@ const DEFAULT_TEXT =
 const DEFAULT_PATTERN = "AAAAA";
 const DEFAULT_HAMMING_FIRST = "AACCT";
 const DEFAULT_HAMMING_SECOND = "AATCT";
-const API_BASE = "http://localhost:8000";
+const API_BASE = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:8000";
 
 const sections = [
   {

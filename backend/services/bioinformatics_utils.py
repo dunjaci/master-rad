@@ -12,11 +12,11 @@ def hamming_distance(first: str, second: str) -> int:
 
 
 def symbol_to_number(symbol: str) -> int:
-    return {"A": 0, "T": 1, "C": 2, "G": 3}[symbol]
+    return {"A": 0, "C": 1, "G": 2, "T": 3}[symbol]
 
 
 def number_to_symbol(number: int) -> str:
-    return ["A", "T", "C", "G"][number]
+    return ["A", "C", "G", "T"][number]
 
 
 def pattern_to_number(pattern: str) -> int:

@@ -35,6 +35,12 @@ const sections = [
     text: "Pronalazi k-mere koji imaju najveći broj približnih pojavljivanja u tekstu.",
   },
   {
+    id: "frequentDict",
+    title: "Efikasnije česte reči",
+    badge: "dict brojači",
+    text: "Čuva samo kandidate koji se pojave u susedstvima, umesto celog niza dužine 4^k.",
+  },
+  {
     id: "reverse",
     title: "Obrnuti komplementi",
     badge: "obe orijentacije",
@@ -85,25 +91,52 @@ def approximate_pattern_count(text, pattern, d):
 
     return neighborhood`,
   frequent: `def frequent_words_with_mismatches(text, k, d):
-    frequency_map = {}
+    frequent_patterns = set([])
+    frequency_array = [0 for _ in range(4 ** k)]
+    close = [0 for _ in range(4 ** k)]
+    n = len(text)
 
-    for i in range(0, len(text) - k + 1):
-        pattern = text[i:i + k]
+    for i in range(n - k + 1):
+        pattern = text[i : i + k]
+        neighborhood = neighbors(pattern, d)
+
+        for neighbor in neighborhood:
+            j = pattern_to_number(neighbor)
+            close[j] = 1
+
+    for i in range(4 ** k):
+        if close[i] == 1:
+            pattern = number_to_pattern(i, k)
+            frequency_array[i] = approximate_pattern_count(text, pattern, d)
+
+    max_count = max(frequency_array)
+
+    for i in range(0, 4 ** k):
+        if frequency_array[i] == max_count:
+            pattern = number_to_pattern(i, k)
+            frequent_patterns.add(pattern)
+
+    return list(frequent_patterns)`,
+  frequentDict: `def frequent_words_with_mismatches_dict(text, k, d):
+    frequent_patterns = set([])
+    frequency_map = dict([])
+    n = len(text)
+
+    for i in range(n - k + 1):
+        pattern = text[i : i + k]
         neighborhood = neighbors(pattern, d)
 
         for neighbor in neighborhood:
             if neighbor not in frequency_map:
-                frequency_map[neighbor] = 0
-            frequency_map[neighbor] += 1
+                frequency_map[neighbor] = approximate_pattern_count(text, neighbor, d)
 
     max_count = max(frequency_map.values())
-    frequent_patterns = []
 
     for pattern, count in frequency_map.items():
         if count == max_count:
-            frequent_patterns.append(pattern)
+            frequent_patterns.add(pattern)
 
-    return sorted(frequent_patterns)`,
+    return list(frequent_patterns)`,
   reverse: `def reverse_complement(pattern):
     complement = {"A": "T", "T": "A", "C": "G", "G": "C"}
     result = ""
@@ -131,12 +164,16 @@ def frequent_words_with_mismatches_and_reverse_complements(text, k, d):
 };
 
 function cleanDna(value) {
-  return value.replace(/\s+/g, "").toUpperCase().replace(/[^ACGT]/g, "");
+  return value.replace(/\s+/g, "").toUpperCase();
+}
+
+function isDna(value) {
+  return /^[ACGT]+$/.test(value);
 }
 
 function PatternComparison({ firstLabel = "Pattern", pattern, secondLabel = "Text", window }) {
   return (
-    <div className="overflow-x-auto rounded-lg bg-slate-50 p-4">
+    <div className="mx-auto w-full max-w-4xl overflow-x-auto rounded-lg bg-slate-50 p-4">
       <div
         className="grid w-max gap-y-2 text-center font-mono text-sm"
         style={{ gridTemplateColumns: `82px repeat(${pattern.length}, 36px)` }}
@@ -266,19 +303,32 @@ export default function MismatchesClient() {
   const cleanedHammingSecond = useMemo(() => cleanDna(hammingSecond), [hammingSecond]);
   const cleanedText = useMemo(() => cleanDna(text), [text]);
   const cleanedPattern = useMemo(() => cleanDna(pattern), [pattern]);
+  const invalidHammingAlphabet =
+    (cleanedHammingFirst.length > 0 && !isDna(cleanedHammingFirst)) ||
+    (cleanedHammingSecond.length > 0 && !isDna(cleanedHammingSecond));
+  const invalidTextAlphabet = cleanedText.length > 0 && !isDna(cleanedText);
+  const invalidPatternAlphabet = cleanedPattern.length > 0 && !isDna(cleanedPattern);
   const safeK = Math.max(1, Number(k) || 1);
   const safeD = Math.max(0, Number(d) || 0);
   const invalidHamming =
     cleanedHammingFirst.length === 0 ||
     cleanedHammingSecond.length === 0 ||
+    invalidHammingAlphabet ||
     cleanedHammingFirst.length !== cleanedHammingSecond.length;
   const invalidMatching =
     cleanedText.length === 0 ||
     cleanedPattern.length === 0 ||
+    invalidTextAlphabet ||
+    invalidPatternAlphabet ||
     cleanedPattern.length > cleanedText.length;
-  const invalidNeighbors = cleanedPattern.length === 0 || safeD > cleanedPattern.length;
+  const invalidNeighbors =
+    cleanedPattern.length === 0 || invalidPatternAlphabet || safeD > cleanedPattern.length;
   const invalidFrequent =
-    cleanedText.length === 0 || safeK > cleanedText.length || safeK > 8 || safeD > safeK;
+    cleanedText.length === 0 ||
+    invalidTextAlphabet ||
+    safeK > cleanedText.length ||
+    safeK > 8 ||
+    safeD > safeK;
   const invalid =
     activeSection === "hamming"
       ? invalidHamming
@@ -287,8 +337,10 @@ export default function MismatchesClient() {
         : activeSection === "neighbors"
           ? invalidNeighbors
           : invalidFrequent;
-  const analysis = apiAnalysis;
+  const analysis = invalid ? null : apiAnalysis;
   const activeData = sections.find((section) => section.id === activeSection);
+  const activeSectionUsesFrequentResult =
+    activeSection === "frequent" || activeSection === "frequentDict";
   const windows = analysis?.windows || [];
   const activeWindow = windows[Math.min(step, Math.max(0, windows.length - 1))];
   const neighborItems = apiNeighborItems || [];
@@ -300,23 +352,29 @@ export default function MismatchesClient() {
     const controller = new AbortController();
 
     if (!invalidHamming) {
-      Promise.resolve().then(() => setApiError(false));
-      fetch(`${API_BASE}/api/mismatches/hamming`, {
-        body: JSON.stringify({ first: cleanedHammingFirst, second: cleanedHammingSecond }),
-        headers: { "Content-Type": "application/json" },
-        method: "POST",
-        signal: controller.signal,
-      })
-        .then((response) => (response.ok ? response.json() : null))
-        .then((data) => {
-          setApiHammingResult(data?.distance ?? null);
-          if (data) setApiError(false);
+      const timeout = setTimeout(() => {
+        Promise.resolve().then(() => setApiError(false));
+        fetch(`${API_BASE}/api/mismatches/hamming`, {
+          body: JSON.stringify({ first: cleanedHammingFirst, second: cleanedHammingSecond }),
+          headers: { "Content-Type": "application/json" },
+          method: "POST",
+          signal: controller.signal,
         })
-        .catch((error) => {
-          if (error.name === "AbortError") return;
-          setApiHammingResult(null);
-          setApiError(true);
-        });
+          .then((response) => (response.ok ? response.json() : null))
+          .then((data) => {
+            setApiHammingResult(data?.distance ?? null);
+            if (data) setApiError(false);
+          })
+          .catch((error) => {
+            if (error.name === "AbortError") return;
+            setApiError(true);
+          });
+      }, 250);
+
+      return () => {
+        clearTimeout(timeout);
+        controller.abort();
+      };
     } else {
       Promise.resolve().then(() => setApiHammingResult(null));
     }
@@ -328,23 +386,29 @@ export default function MismatchesClient() {
     const controller = new AbortController();
 
     if (!invalidNeighbors) {
-      Promise.resolve().then(() => setApiError(false));
-      fetch(`${API_BASE}/api/mismatches/neighbors`, {
-        body: JSON.stringify({ pattern: cleanedPattern, d: safeD }),
-        headers: { "Content-Type": "application/json" },
-        method: "POST",
-        signal: controller.signal,
-      })
-        .then((response) => (response.ok ? response.json() : null))
-        .then((data) => {
-          setApiNeighborItems(data?.neighbors ?? null);
-          if (data) setApiError(false);
+      const timeout = setTimeout(() => {
+        Promise.resolve().then(() => setApiError(false));
+        fetch(`${API_BASE}/api/mismatches/neighbors`, {
+          body: JSON.stringify({ pattern: cleanedPattern, d: safeD }),
+          headers: { "Content-Type": "application/json" },
+          method: "POST",
+          signal: controller.signal,
         })
-        .catch((error) => {
-          if (error.name === "AbortError") return;
-          setApiNeighborItems(null);
-          setApiError(true);
-        });
+          .then((response) => (response.ok ? response.json() : null))
+          .then((data) => {
+            setApiNeighborItems(data?.neighbors ?? null);
+            if (data) setApiError(false);
+          })
+          .catch((error) => {
+            if (error.name === "AbortError") return;
+            setApiError(true);
+          });
+      }, 250);
+
+      return () => {
+        clearTimeout(timeout);
+        controller.abort();
+      };
     } else {
       Promise.resolve().then(() => setApiNeighborItems(null));
     }
@@ -356,23 +420,29 @@ export default function MismatchesClient() {
     const controller = new AbortController();
 
     if (!invalidMatching) {
-      Promise.resolve().then(() => setApiError(false));
-      fetch(`${API_BASE}/api/mismatches/approximate-count`, {
-        body: JSON.stringify({ text: cleanedText, pattern: cleanedPattern, d: safeD }),
-        headers: { "Content-Type": "application/json" },
-        method: "POST",
-        signal: controller.signal,
-      })
-        .then((response) => (response.ok ? response.json() : null))
-        .then((data) => {
-          setApiApproximate(data || null);
-          if (data) setApiError(false);
+      const timeout = setTimeout(() => {
+        Promise.resolve().then(() => setApiError(false));
+        fetch(`${API_BASE}/api/mismatches/approximate-count`, {
+          body: JSON.stringify({ text: cleanedText, pattern: cleanedPattern, d: safeD }),
+          headers: { "Content-Type": "application/json" },
+          method: "POST",
+          signal: controller.signal,
         })
-        .catch((error) => {
-          if (error.name === "AbortError") return;
-          setApiApproximate(null);
-          setApiError(true);
-        });
+          .then((response) => (response.ok ? response.json() : null))
+          .then((data) => {
+            setApiApproximate(data || null);
+            if (data) setApiError(false);
+          })
+          .catch((error) => {
+            if (error.name === "AbortError") return;
+            setApiError(true);
+          });
+      }, 250);
+
+      return () => {
+        clearTimeout(timeout);
+        controller.abort();
+      };
     } else {
       Promise.resolve().then(() => setApiApproximate(null));
     }
@@ -384,28 +454,34 @@ export default function MismatchesClient() {
     const controller = new AbortController();
     const patternForWindows = cleanedPattern || cleanedText.slice(0, safeK);
     const analysisInvalid =
-      activeSection === "frequent" || activeSection === "reverse"
+      activeSectionUsesFrequentResult || activeSection === "reverse"
         ? invalidFrequent
         : invalidMatching;
 
     if (!analysisInvalid && activeSection !== "hamming" && activeSection !== "neighbors") {
-      Promise.resolve().then(() => setApiError(false));
-      fetch(`${API_BASE}/api/mismatches/analyze`, {
-        body: JSON.stringify({ text: cleanedText, pattern: patternForWindows, k: safeK, d: safeD }),
-        headers: { "Content-Type": "application/json" },
-        method: "POST",
-        signal: controller.signal,
-      })
-        .then((response) => (response.ok ? response.json() : null))
-        .then((data) => {
-          setApiAnalysis(data || null);
-          if (data) setApiError(false);
+      const timeout = setTimeout(() => {
+        Promise.resolve().then(() => setApiError(false));
+        fetch(`${API_BASE}/api/mismatches/analyze`, {
+          body: JSON.stringify({ text: cleanedText, pattern: patternForWindows, k: safeK, d: safeD }),
+          headers: { "Content-Type": "application/json" },
+          method: "POST",
+          signal: controller.signal,
         })
-        .catch((error) => {
-          if (error.name === "AbortError") return;
-          setApiAnalysis(null);
-          setApiError(true);
-        });
+          .then((response) => (response.ok ? response.json() : null))
+          .then((data) => {
+            setApiAnalysis(data || null);
+            if (data) setApiError(false);
+          })
+          .catch((error) => {
+            if (error.name === "AbortError") return;
+            setApiError(true);
+          });
+      }, 250);
+
+      return () => {
+        clearTimeout(timeout);
+        controller.abort();
+      };
     } else {
       Promise.resolve().then(() => setApiAnalysis(null));
     }
@@ -413,6 +489,7 @@ export default function MismatchesClient() {
     return () => controller.abort();
   }, [
     activeSection,
+    activeSectionUsesFrequentResult,
     cleanedText,
     cleanedPattern,
     invalidFrequent,
@@ -518,33 +595,24 @@ export default function MismatchesClient() {
                 <h2 className="mt-2 text-2xl font-bold">{activeData.title}</h2>
                 <p className="mt-1 text-sm text-slate-500">{activeData.text}</p>
               </div>
-              {activeSection !== "hamming" && (
-                <button
-                  className="rounded-lg bg-slate-950 px-4 py-2 text-sm font-bold text-white transition hover:bg-blue-700"
-                  onClick={resetStep}
-                  type="button"
-                >
-                  Pokreni od početka
-                </button>
-              )}
             </div>
 
-            <div className="mt-5 grid gap-4 rounded-lg bg-slate-50 p-4">
+            <div className="mx-auto mt-5 grid w-full max-w-4xl gap-4 rounded-lg bg-slate-50 p-4">
               {activeSection === "hamming" && (
                 <div className="grid gap-4 md:grid-cols-2">
                   <label className="grid gap-2 text-sm font-semibold text-slate-700">
                     Prva sekvenca
                     <input
-                      className="rounded-lg border border-slate-200 p-3 font-mono outline-none transition focus:border-blue-400 focus:ring-4 focus:ring-blue-100"
-                      onChange={(event) => setHammingFirst(event.target.value)}
+                      className="rounded-lg border border-slate-200 px-3 py-2 font-mono outline-none transition focus:border-blue-400 focus:ring-4 focus:ring-blue-100"
+                      onChange={(event) => setHammingFirst(event.target.value.toUpperCase())}
                       value={hammingFirst}
                     />
                   </label>
                   <label className="grid gap-2 text-sm font-semibold text-slate-700">
                     Druga sekvenca
                     <input
-                      className="rounded-lg border border-slate-200 p-3 font-mono outline-none transition focus:border-blue-400 focus:ring-4 focus:ring-blue-100"
-                      onChange={(event) => setHammingSecond(event.target.value)}
+                      className="rounded-lg border border-slate-200 px-3 py-2 font-mono outline-none transition focus:border-blue-400 focus:ring-4 focus:ring-blue-100"
+                      onChange={(event) => setHammingSecond(event.target.value.toUpperCase())}
                       value={hammingSecond}
                     />
                   </label>
@@ -556,21 +624,21 @@ export default function MismatchesClient() {
                   <label className="grid gap-2 text-sm font-semibold text-slate-700">
                     Tekst
                     <textarea
-                      className="min-h-20 rounded-lg border border-slate-200 bg-white p-3 font-mono text-sm font-medium outline-none transition focus:border-blue-400 focus:ring-4 focus:ring-blue-100"
+                      className="min-h-16 resize-y rounded-lg border border-slate-200 bg-white p-3 font-mono text-sm font-medium outline-none transition focus:border-blue-400 focus:ring-4 focus:ring-blue-100"
                       onChange={(event) => {
-                        setText(event.target.value);
+                        setText(event.target.value.toUpperCase());
                         setStep(0);
                       }}
                       value={text}
                     />
                   </label>
-                  <div className="grid gap-4 md:grid-cols-2">
-                    <label className="grid gap-2 text-sm font-semibold text-slate-700">
+                  <div className="grid gap-4 md:grid-cols-[minmax(0,1fr)_6rem]">
+                    <label className="grid min-w-44 flex-1 gap-2 text-sm font-semibold text-slate-700">
                       Obrazac
                       <input
-                        className="rounded-lg border border-slate-200 p-3 font-mono outline-none transition focus:border-blue-400 focus:ring-4 focus:ring-blue-100"
+                        className="w-full min-w-0 rounded-lg border border-slate-200 px-3 py-2 font-mono outline-none transition focus:border-blue-400 focus:ring-4 focus:ring-blue-100"
                         onChange={(event) => {
-                          setPattern(event.target.value);
+                          setPattern(event.target.value.toUpperCase());
                           setStep(0);
                         }}
                         value={pattern}
@@ -579,7 +647,7 @@ export default function MismatchesClient() {
                     <label className="grid gap-2 text-sm font-semibold text-slate-700">
                       d
                       <input
-                        className="rounded-lg border border-slate-200 p-3 font-mono outline-none transition focus:border-blue-400 focus:ring-4 focus:ring-blue-100"
+                        className="w-full min-w-0 rounded-lg border border-slate-200 px-3 py-2 font-mono outline-none transition focus:border-blue-400 focus:ring-4 focus:ring-blue-100"
                         min="0"
                         onChange={(event) => {
                           setD(event.target.value);
@@ -594,13 +662,13 @@ export default function MismatchesClient() {
               )}
 
               {activeSection === "neighbors" && (
-                <div className="grid gap-4 md:grid-cols-2">
-                  <label className="grid gap-2 text-sm font-semibold text-slate-700">
+                <div className="grid gap-4 md:grid-cols-[minmax(0,1fr)_6rem]">
+                  <label className="grid min-w-44 flex-1 gap-2 text-sm font-semibold text-slate-700">
                     Obrazac
                     <input
-                      className="rounded-lg border border-slate-200 p-3 font-mono outline-none transition focus:border-blue-400 focus:ring-4 focus:ring-blue-100"
+                      className="w-full min-w-0 rounded-lg border border-slate-200 px-3 py-2 font-mono outline-none transition focus:border-blue-400 focus:ring-4 focus:ring-blue-100"
                       onChange={(event) => {
-                        setPattern(event.target.value);
+                        setPattern(event.target.value.toUpperCase());
                         setStep(0);
                       }}
                       value={pattern}
@@ -609,7 +677,7 @@ export default function MismatchesClient() {
                   <label className="grid gap-2 text-sm font-semibold text-slate-700">
                     d
                     <input
-                      className="rounded-lg border border-slate-200 p-3 font-mono outline-none transition focus:border-blue-400 focus:ring-4 focus:ring-blue-100"
+                      className="w-full min-w-0 rounded-lg border border-slate-200 px-3 py-2 font-mono outline-none transition focus:border-blue-400 focus:ring-4 focus:ring-blue-100"
                       min="0"
                       onChange={(event) => {
                         setD(event.target.value);
@@ -622,24 +690,24 @@ export default function MismatchesClient() {
                 </div>
               )}
 
-              {(activeSection === "frequent" || activeSection === "reverse") && (
+              {(activeSectionUsesFrequentResult || activeSection === "reverse") && (
                 <>
                   <label className="grid gap-2 text-sm font-semibold text-slate-700">
                     Tekst
                     <textarea
-                      className="min-h-20 rounded-lg border border-slate-200 bg-white p-3 font-mono text-sm font-medium outline-none transition focus:border-blue-400 focus:ring-4 focus:ring-blue-100"
+                      className="min-h-16 resize-y rounded-lg border border-slate-200 bg-white p-3 font-mono text-sm font-medium outline-none transition focus:border-blue-400 focus:ring-4 focus:ring-blue-100"
                       onChange={(event) => {
-                        setText(event.target.value);
+                        setText(event.target.value.toUpperCase());
                         setStep(0);
                       }}
                       value={text}
                     />
                   </label>
-                  <div className="grid gap-4 md:grid-cols-2">
+                  <div className="grid max-w-52 grid-cols-2 gap-4">
                     <label className="grid gap-2 text-sm font-semibold text-slate-700">
                       k
                       <input
-                        className="rounded-lg border border-slate-200 p-3 font-mono outline-none transition focus:border-blue-400 focus:ring-4 focus:ring-blue-100"
+                        className="w-full min-w-0 rounded-lg border border-slate-200 px-3 py-2 font-mono outline-none transition focus:border-blue-400 focus:ring-4 focus:ring-blue-100"
                         min="1"
                         onChange={(event) => {
                           setK(event.target.value);
@@ -652,7 +720,7 @@ export default function MismatchesClient() {
                     <label className="grid gap-2 text-sm font-semibold text-slate-700">
                       d
                       <input
-                        className="rounded-lg border border-slate-200 p-3 font-mono outline-none transition focus:border-blue-400 focus:ring-4 focus:ring-blue-100"
+                        className="w-full min-w-0 rounded-lg border border-slate-200 px-3 py-2 font-mono outline-none transition focus:border-blue-400 focus:ring-4 focus:ring-blue-100"
                         min="0"
                         onChange={(event) => {
                           setD(event.target.value);
@@ -670,12 +738,12 @@ export default function MismatchesClient() {
             {invalid && (
               <div className="mt-5 rounded-lg border border-red-200 bg-red-50 p-4 text-sm font-semibold text-red-700">
                 {activeSection === "hamming"
-                  ? "Unesi dve DNK sekvence iste dužine."
+                  ? "Unos sme da sadrži samo slova A, C, T i G; sekvence moraju biti iste dužine."
                   : activeSection === "matching"
-                    ? "Unesi tekst i obrazac koji nije duži od teksta, uz dozvoljeni broj odstupanja d."
+                    ? "Unos sme da sadrži samo slova A, C, T i G; obrazac ne sme biti duži od teksta."
                     : activeSection === "neighbors"
-                      ? "Unesi obrazac i vrednost d koja nije veća od dužine obrasca."
-                      : "Unesi tekst, k do 8 i vrednost d koja nije veća od k."}
+                      ? "Obrazac sme da sadrži samo slova A, C, T i G, a d ne sme biti veće od dužine obrasca."
+                      : "Tekst sme da sadrži samo slova A, C, T i G; k je najviše 8, a d ne sme biti veće od k."}
               </div>
             )}
 
@@ -694,7 +762,7 @@ export default function MismatchesClient() {
                   window={cleanedHammingSecond}
                 />
 
-                <div className="grid gap-3 md:grid-cols-3">
+                <div className="mx-auto grid w-full max-w-4xl gap-3 md:grid-cols-3">
                   <div className="rounded-lg bg-slate-50 p-3">
                     <p className="text-sm text-slate-500">Dužina</p>
                     <p className="mt-1 text-2xl font-bold">{cleanedHammingFirst.length}</p>
@@ -711,7 +779,7 @@ export default function MismatchesClient() {
                   </div>
                 </div>
 
-                <div className="rounded-lg border border-slate-200 p-4">
+                <div className="mx-auto w-full max-w-4xl rounded-lg border border-slate-200 p-4">
                   <p className="font-semibold">Kako se računa?</p>
                   <p className="mt-2 leading-7 text-slate-600">
                     Algoritam poredi simbole na istim pozicijama. Svaka kolona u kojoj se
@@ -724,7 +792,7 @@ export default function MismatchesClient() {
 
             {!invalid && activeSection === "neighbors" && (
               <div className="mt-5 space-y-4">
-                <div className="grid gap-3 md:grid-cols-3">
+                <div className="mx-auto grid w-full max-w-4xl gap-3 md:grid-cols-3">
                   <div className="rounded-lg bg-slate-50 p-3">
                     <p className="text-sm text-slate-500">Obrazac</p>
                     <p className="mt-1 font-mono text-2xl font-bold">{cleanedPattern}</p>
@@ -738,7 +806,7 @@ export default function MismatchesClient() {
                     <p className="mt-1 text-2xl font-bold">{neighborItems.length}</p>
                   </div>
                 </div>
-                <div className="rounded-lg border border-slate-200 p-4">
+                <div className="mx-auto w-full max-w-4xl rounded-lg border border-slate-200 p-4">
                   <p className="font-semibold">Susedstvo(obrazac, d)</p>
                   <p className="mt-2 text-sm leading-6 text-slate-600">
                     Susedstvo sadrži sve sekvence iste dužine koje su udaljene najviše d
@@ -756,7 +824,7 @@ export default function MismatchesClient() {
                 {activeSection === "matching" && (
                   <>
                     <PatternComparison pattern={cleanedPattern} window={activeWindow.pattern} />
-                    <div className="grid gap-3 md:grid-cols-3">
+                    <div className="mx-auto grid w-full max-w-4xl gap-3 md:grid-cols-3">
                       <div className="rounded-lg bg-slate-50 p-3">
                         <p className="text-sm text-slate-500">Pozicija</p>
                         <p className="mt-1 text-2xl font-bold">{activeWindow.index}</p>
@@ -773,19 +841,23 @@ export default function MismatchesClient() {
                       </div>
                     </div>
 
-                    <div className="flex flex-wrap items-center justify-between gap-3 rounded-lg border border-slate-200 bg-white p-3">
+                    <div className="mx-auto flex w-full max-w-4xl flex-wrap items-center justify-between gap-3 rounded-lg border border-slate-200 bg-white p-3">
                       <button
-                        className="rounded-lg border border-slate-200 px-4 py-2 text-sm font-bold text-slate-700 transition hover:border-blue-300 hover:bg-blue-50 hover:text-blue-700"
+                        className="rounded-lg border border-slate-200 px-3 py-2 text-sm font-bold text-slate-700 transition hover:border-blue-300 hover:bg-blue-50 hover:text-blue-700"
                         onClick={previousStep}
                         type="button"
                       >
                         Prethodni prozor
                       </button>
-                      <span className="rounded-full bg-slate-100 px-4 py-2 text-sm font-bold text-slate-700">
-                        Prozor {activeWindow.index + 1} od {windows.length}
-                      </span>
                       <button
-                        className="rounded-lg bg-blue-600 px-4 py-2 text-sm font-bold text-white transition hover:bg-blue-700"
+                        className="rounded-lg bg-slate-950 px-3 py-2 text-sm font-bold text-white transition hover:bg-blue-700"
+                        onClick={resetStep}
+                        type="button"
+                      >
+                        Pokreni od početka
+                      </button>
+                      <button
+                        className="rounded-lg bg-blue-600 px-3 py-2 text-sm font-bold text-white transition hover:bg-blue-700"
                         onClick={nextStep}
                         type="button"
                       >
@@ -793,7 +865,7 @@ export default function MismatchesClient() {
                       </button>
                     </div>
 
-                    <div className="rounded-lg border border-slate-200 p-4">
+                    <div className="mx-auto w-full max-w-4xl rounded-lg border border-slate-200 p-4">
                       <p className="font-semibold">Sva približna poklapanja</p>
                       <p className="mt-2 text-sm leading-6 text-slate-600">
                         Broj približnih pojavljivanja obrasca je{" "}
@@ -815,15 +887,19 @@ export default function MismatchesClient() {
                   </>
                 )}
 
-                {activeSection === "frequent" && (
+                {activeSectionUsesFrequentResult && (
                   <>
-                    <div className="grid gap-3 md:grid-cols-3">
+                    <div className="mx-auto grid w-full max-w-4xl gap-3 md:grid-cols-3">
                       <div className="rounded-lg bg-slate-50 p-3">
-                        <p className="text-sm text-slate-500">Kandidata</p>
+                        <p className="text-sm text-slate-500">
+                          {activeSection === "frequentDict" ? "Dict kandidata" : "Close kandidata"}
+                        </p>
                         <p className="mt-1 text-2xl font-bold">{candidateCount}</p>
                       </div>
                       <div className="rounded-lg bg-blue-50 p-3">
-                        <p className="text-sm text-blue-700">Maksimalna frekvencija</p>
+                        <p className="text-sm text-blue-700">
+                          {activeSection === "frequentDict" ? "Max frequency_map" : "Max FrequencyArray"}
+                        </p>
                         <p className="mt-1 text-2xl font-bold">{analysis.maxCount}</p>
                       </div>
                       <div className="rounded-lg bg-emerald-50 p-3">
@@ -831,13 +907,30 @@ export default function MismatchesClient() {
                         <p className="mt-1 text-2xl font-bold">{analysis.frequentPatterns.length}</p>
                       </div>
                     </div>
-                    <div className="rounded-lg border border-slate-200 p-4">
-                      <p className="font-semibold">Najbolji kandidati</p>
-                      <p className="mt-2 text-sm leading-6 text-slate-600">
-                        Brojanje se dobija tako što svaki k-mer iz teksta glasa za sve
-                        svoje susede. Zato najčešći motiv ne mora nužno da postoji u tekstu
-                        u tačnom obliku.
+                    <div className="mx-auto w-full max-w-4xl rounded-lg border border-slate-200 p-4">
+                      <p className="font-semibold">
+                        {activeSection === "frequentDict"
+                          ? "frequency_map za viđene susede"
+                          : "FrequencyArray za Close kandidate"}
                       </p>
+                      {activeSection === "frequentDict" ? (
+                        <p className="mt-2 text-sm leading-6 text-slate-600">
+                          Rečnik čuva samo susede koji se zaista pojave kao kandidati.
+                          Kada se sused prvi put vidi, za njega se računa{" "}
+                          <span className="font-mono font-bold">ApproximatePatternCount</span>
+                          i vrednost se pamti u{" "}
+                          <span className="font-mono font-bold">frequency_map</span>.
+                        </p>
+                      ) : (
+                        <p className="mt-2 text-sm leading-6 text-slate-600">
+                          Prvo se susedi svih k-mera označe u nizu{" "}
+                          <span className="font-mono font-bold">Close</span>. Zatim se samo
+                          za te kandidate računa{" "}
+                          <span className="font-mono font-bold">ApproximatePatternCount</span>,
+                          a dobijene vrednosti se upisuju u{" "}
+                          <span className="font-mono font-bold">FrequencyArray</span>.
+                        </p>
+                      )}
                       <div className="mt-4">
                         <RankingTable entries={analysis.candidateEntries} />
                       </div>
@@ -847,7 +940,7 @@ export default function MismatchesClient() {
 
                 {activeSection === "reverse" && (
                   <>
-                    <div className="grid gap-3 md:grid-cols-3">
+                    <div className="mx-auto grid w-full max-w-4xl gap-3 md:grid-cols-3">
                       <div className="rounded-lg bg-slate-50 p-3">
                         <p className="text-sm text-slate-500">Kandidata</p>
                         <p className="mt-1 text-2xl font-bold">{candidateCount}</p>
@@ -863,7 +956,7 @@ export default function MismatchesClient() {
                         </p>
                       </div>
                     </div>
-                    <div className="rounded-lg border border-slate-200 p-4">
+                    <div className="mx-auto w-full max-w-4xl rounded-lg border border-slate-200 p-4">
                       <p className="font-semibold">Sabiranje obe orijentacije</p>
                       <p className="mt-2 text-sm leading-6 text-slate-600">
                         Za svaki obrazac računa se broj približnih pojavljivanja samog
@@ -901,7 +994,7 @@ export default function MismatchesClient() {
                     ))}
                   </div>
                 </>
-              ) : activeSection === "frequent" ? (
+              ) : activeSectionUsesFrequentResult ? (
                 <>
                   <p className="mt-3 leading-7 text-slate-600">
                     Maksimalna približna frekvencija je{" "}
@@ -932,3 +1025,4 @@ export default function MismatchesClient() {
     </main>
   );
 }
+

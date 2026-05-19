@@ -3,6 +3,8 @@ from services.bioinformatics_utils import (
     clean_dna,
     hamming_distance,
     neighbors,
+    number_to_pattern,
+    pattern_to_number,
     reverse_complement,
 )
 
@@ -11,8 +13,6 @@ def analyze_mismatches(text: str, pattern: str, k: int, d: int) -> dict:
     text = clean_dna(text)
     pattern = clean_dna(pattern)
     windows = []
-    candidate_counts = {}
-    candidate_sources = {}
     candidate_set = set()
 
     if pattern:
@@ -27,21 +27,30 @@ def analyze_mismatches(text: str, pattern: str, k: int, d: int) -> dict:
             )
 
     if text and k <= len(text):
+        close = [0 for _ in range(4 ** k)]
+        frequency_array = [0 for _ in range(4 ** k)]
+
         for i in range(len(text) - k + 1):
             kmer = text[i : i + k]
             for neighbor in neighbors(kmer, d):
-                candidate_set.add(neighbor)
-                candidate_counts[neighbor] = candidate_counts.get(neighbor, 0) + 1
-                candidate_sources.setdefault(neighbor, []).append(i)
+                close[pattern_to_number(neighbor)] = 1
+
+        for index in range(4 ** k):
+            if close[index] == 1:
+                candidate = number_to_pattern(index, k)
+                candidate_set.add(candidate)
+                frequency_array[index] = approximate_pattern_count(text, candidate, d)["count"]
+    else:
+        frequency_array = []
 
     candidate_entries = [
         {
             "candidate": candidate,
-            "count": count,
+            "count": frequency_array[pattern_to_number(candidate)],
             "reverse": reverse_complement(candidate),
-            "sources": candidate_sources[candidate],
+            "sources": approximate_pattern_count(text, candidate, d)["positions"],
         }
-        for candidate, count in candidate_counts.items()
+        for candidate in candidate_set
     ]
     candidate_entries.sort(key=lambda item: (-item["count"], item["candidate"]))
     max_count = max((entry["count"] for entry in candidate_entries), default=0)

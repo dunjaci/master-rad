@@ -7,7 +7,7 @@ const API_BASE = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:8000"
 
 const codeSamples = {
   naive: `def symbol_to_number(symbol):
-    return {"A": 0, "T": 1, "C": 2, "G": 3}[symbol]
+    return {"A": 0, "C": 1, "G": 2, "T": 3}[symbol]
 
 def pattern_to_number(pattern):
     number = 0
@@ -16,7 +16,7 @@ def pattern_to_number(pattern):
     return number
 
 def number_to_pattern(index, k):
-    symbols = ["A", "T", "C", "G"]
+    symbols = ["A", "C", "G", "T"]
     pattern = ""
     for _ in range(k):
         pattern = symbols[index % 4] + pattern
@@ -96,17 +96,23 @@ const approaches = [
 ];
 
 function cleanDna(value) {
-  return value.replace(/\s+/g, "").toUpperCase().replace(/[^ACGT]/g, "");
+  return value.replace(/\s+/g, "").toUpperCase();
 }
 
-function GenomeWindow({ genome, k, L, start }) {
+function isDna(value) {
+  return /^[ACGT]+$/.test(value);
+}
+
+function GenomeWindow({ activeApproach, genome, k, L, start }) {
   return (
-    <div className="max-w-full overflow-x-auto rounded-lg border border-slate-200 bg-slate-50 p-4">
+    <div className="mx-auto w-full max-w-4xl overflow-x-auto rounded-lg border border-slate-200 bg-slate-50 p-4">
       <div className="flex w-max gap-1 font-mono text-sm">
         {genome.split("").map((symbol, index) => {
           const inWindow = index >= start && index < start + L;
-          const entering = index >= start + L - k && index < start + L;
-          const leaving = start > 0 && index >= start - 1 && index < start - 1 + k;
+          const showSlidingChange = activeApproach === "better";
+          const entering = showSlidingChange && index >= start + L - k && index < start + L;
+          const leaving =
+            showSlidingChange && start > 0 && index >= start - 1 && index < start - 1 + k;
           return (
             <span
               className={`grid h-8 w-8 place-items-center rounded-md border ${
@@ -139,7 +145,7 @@ function GenomeWindow({ genome, k, L, start }) {
 function WindowExplanation({ activeApproach, activeWindow }) {
   if (activeApproach === "better" && activeWindow.start > 0) {
     return (
-      <div className="rounded-lg border border-slate-200 p-4">
+      <div className="mx-auto w-full max-w-4xl rounded-lg border border-slate-200 p-4">
         <p className="font-semibold">Šta se menja pri pomeranju prozora?</p>
         <p className="mt-2 leading-7 text-slate-600">
           Iz prozora izlazi k-mer{" "}
@@ -157,7 +163,7 @@ function WindowExplanation({ activeApproach, activeWindow }) {
   }
 
   return (
-    <div className="rounded-lg border border-slate-200 p-4">
+    <div className="mx-auto w-full max-w-4xl rounded-lg border border-slate-200 p-4">
       <p className="font-semibold">Šta radi ovaj korak?</p>
       <p className="mt-2 leading-7 text-slate-600">
         Posmatra se segment genoma od pozicije{" "}
@@ -173,7 +179,7 @@ function WindowExplanation({ activeApproach, activeWindow }) {
 
 function FrequencyTable({ activeWindow, t }) {
   return (
-    <div className="rounded-lg border border-slate-200 p-4">
+    <div className="mx-auto w-full max-w-4xl rounded-lg border border-slate-200 p-4">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <p className="font-semibold">Frekvencije u trenutnom L-prozoru</p>
         <span className="font-mono text-sm text-slate-500">prag t = {t}</span>
@@ -229,8 +235,10 @@ export default function ClumpFindingClient() {
   const safeK = Math.max(1, Number(k) || 1);
   const safeL = Math.max(safeK, Number(L) || safeK);
   const safeT = Math.max(1, Number(t) || 1);
-  const invalid = cleanedGenome.length === 0 || safeK > safeL || safeL > cleanedGenome.length;
-  const analysis = apiAnalysis;
+  const invalidAlphabet = cleanedGenome.length > 0 && !isDna(cleanedGenome);
+  const invalid =
+    cleanedGenome.length === 0 || invalidAlphabet || safeK > safeL || safeL > cleanedGenome.length;
+  const analysis = invalid ? null : apiAnalysis;
   const windows = activeApproach === "better" ? analysis?.betterWindows : analysis?.windows;
   const activeWindow = windows?.[Math.min(step, windows.length - 1)];
   const activeApproachData = approaches.find((item) => item.id === activeApproach);
@@ -243,27 +251,31 @@ export default function ClumpFindingClient() {
     }
 
     const controller = new AbortController();
-    Promise.resolve().then(() => setApiError(false));
-    fetch(`${API_BASE}/api/clump-finding`, {
-      body: JSON.stringify({ genome: cleanedGenome, k: safeK, l: safeL, t: safeT }),
-      headers: { "Content-Type": "application/json" },
-      method: "POST",
-      signal: controller.signal,
-    })
-      .then((response) => (response.ok ? response.json() : null))
-      .then((data) => {
-        if (data) {
-          setApiAnalysis(data);
-          setApiError(false);
-        }
+    const timeout = setTimeout(() => {
+      Promise.resolve().then(() => setApiError(false));
+      fetch(`${API_BASE}/api/clump-finding`, {
+        body: JSON.stringify({ genome: cleanedGenome, k: safeK, l: safeL, t: safeT }),
+        headers: { "Content-Type": "application/json" },
+        method: "POST",
+        signal: controller.signal,
       })
-      .catch((error) => {
-        if (error.name === "AbortError") return;
-        setApiAnalysis(null);
-        setApiError(true);
-      });
+        .then((response) => (response.ok ? response.json() : null))
+        .then((data) => {
+          if (data) {
+            setApiAnalysis(data);
+            setApiError(false);
+          }
+        })
+        .catch((error) => {
+          if (error.name === "AbortError") return;
+          setApiError(true);
+        });
+    }, 250);
 
-    return () => controller.abort();
+    return () => {
+      clearTimeout(timeout);
+      controller.abort();
+    };
   }, [cleanedGenome, invalid, safeK, safeL, safeT]);
 
   function resetStep() {
@@ -361,33 +373,26 @@ export default function ClumpFindingClient() {
                 <h2 className="mt-2 text-2xl font-bold">Klizni L-prozor</h2>
                 <p className="mt-1 text-sm text-slate-500">{activeApproachData.title}</p>
               </div>
-              <button
-                className="rounded-lg bg-slate-950 px-4 py-2 text-sm font-bold text-white transition hover:bg-blue-700"
-                onClick={resetStep}
-                type="button"
-              >
-                Pokreni od početka
-              </button>
             </div>
 
-            <div className="mt-5 grid gap-4 rounded-lg bg-slate-50 p-4">
+            <div className="mx-auto mt-5 grid w-full max-w-4xl gap-4 rounded-lg bg-slate-50 p-4">
               <label className="grid gap-2 text-sm font-semibold text-slate-700">
                 DNK sekvenca
                 <textarea
-                  className="min-h-20 rounded-lg border border-slate-200 bg-white p-3 font-mono text-sm font-medium outline-none transition focus:border-blue-400 focus:ring-4 focus:ring-blue-100"
+                  className="min-h-16 resize-y rounded-lg border border-slate-200 bg-white p-3 font-mono text-sm font-medium outline-none transition focus:border-blue-400 focus:ring-4 focus:ring-blue-100"
                   onChange={(event) => {
-                    setGenome(event.target.value);
+                    setGenome(event.target.value.toUpperCase());
                     setStep(0);
                   }}
                   value={genome}
                 />
               </label>
 
-              <div className="grid gap-4 sm:grid-cols-3">
+              <div className="grid max-w-80 grid-cols-[5rem_6rem_5rem] gap-4">
                 <label className="grid gap-2 text-sm font-semibold text-slate-700">
                   k
                   <input
-                    className="rounded-lg border border-slate-200 p-3 font-mono outline-none transition focus:border-blue-400 focus:ring-4 focus:ring-blue-100"
+                    className="w-full min-w-0 rounded-lg border border-slate-200 px-3 py-2 font-mono outline-none transition focus:border-blue-400 focus:ring-4 focus:ring-blue-100"
                     min="1"
                     onChange={(event) => {
                       setK(event.target.value);
@@ -400,7 +405,7 @@ export default function ClumpFindingClient() {
                 <label className="grid gap-2 text-sm font-semibold text-slate-700">
                   L
                   <input
-                    className="rounded-lg border border-slate-200 p-3 font-mono outline-none transition focus:border-blue-400 focus:ring-4 focus:ring-blue-100"
+                    className="w-full min-w-0 rounded-lg border border-slate-200 px-3 py-2 font-mono outline-none transition focus:border-blue-400 focus:ring-4 focus:ring-blue-100"
                     min="1"
                     onChange={(event) => {
                       setL(event.target.value);
@@ -413,7 +418,7 @@ export default function ClumpFindingClient() {
                 <label className="grid gap-2 text-sm font-semibold text-slate-700">
                   t
                   <input
-                    className="rounded-lg border border-slate-200 p-3 font-mono outline-none transition focus:border-blue-400 focus:ring-4 focus:ring-blue-100"
+                    className="w-full min-w-0 rounded-lg border border-slate-200 px-3 py-2 font-mono outline-none transition focus:border-blue-400 focus:ring-4 focus:ring-blue-100"
                     min="1"
                     onChange={(event) => {
                       setT(event.target.value);
@@ -428,7 +433,7 @@ export default function ClumpFindingClient() {
 
             {invalid && (
               <div className="mt-5 rounded-lg border border-red-200 bg-red-50 p-4 text-sm font-semibold text-red-700">
-                Unesi DNK sekvencu sa slovima A, C, G i T, uz uslov k &lt;= L &lt;= |Genom|.
+                Unos sme da sadrži samo slova A, C, T i G, uz uslov k &lt;= L &lt;= dužina genoma.
               </div>
             )}
 
@@ -440,9 +445,15 @@ export default function ClumpFindingClient() {
 
             {analysis && activeWindow && (
               <div className="mt-5 space-y-4">
-                <GenomeWindow genome={cleanedGenome} k={safeK} L={safeL} start={activeWindow.start} />
+                <GenomeWindow
+                  activeApproach={activeApproach}
+                  genome={cleanedGenome}
+                  k={safeK}
+                  L={safeL}
+                  start={activeWindow.start}
+                />
 
-                <div className="grid gap-3 md:grid-cols-3">
+                <div className="mx-auto grid w-full max-w-4xl gap-3 md:grid-cols-3">
                   <div className="rounded-lg bg-slate-50 p-3">
                     <p className="text-sm text-slate-500">Prozor</p>
                     <p className="mt-1 text-2xl font-bold">
@@ -461,19 +472,23 @@ export default function ClumpFindingClient() {
                   </div>
                 </div>
 
-                <div className="flex flex-wrap items-center justify-between gap-3 rounded-lg border border-slate-200 bg-white p-3">
+                <div className="mx-auto flex w-full max-w-4xl flex-wrap items-center justify-between gap-3 rounded-lg border border-slate-200 bg-white p-3">
                   <button
-                    className="rounded-lg border border-slate-200 px-4 py-2 text-sm font-bold text-slate-700 transition hover:border-blue-300 hover:bg-blue-50 hover:text-blue-700"
+                    className="rounded-lg border border-slate-200 px-3 py-2 text-sm font-bold text-slate-700 transition hover:border-blue-300 hover:bg-blue-50 hover:text-blue-700"
                     onClick={previousStep}
                     type="button"
                   >
                     Prethodni prozor
                   </button>
-                  <span className="rounded-full bg-slate-100 px-4 py-2 text-sm font-bold text-slate-700">
-                    Prozor {activeWindow.start + 1} od {windows.length}
-                  </span>
                   <button
-                    className="rounded-lg bg-blue-600 px-4 py-2 text-sm font-bold text-white transition hover:bg-blue-700"
+                    className="rounded-lg bg-slate-950 px-3 py-2 text-sm font-bold text-white transition hover:bg-blue-700"
+                    onClick={resetStep}
+                    type="button"
+                  >
+                    Pokreni od početka
+                  </button>
+                  <button
+                    className="rounded-lg bg-blue-600 px-3 py-2 text-sm font-bold text-white transition hover:bg-blue-700"
                     onClick={nextStep}
                     type="button"
                   >
@@ -518,3 +533,4 @@ export default function ClumpFindingClient() {
     </main>
   );
 }
+

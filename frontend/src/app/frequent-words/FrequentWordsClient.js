@@ -37,8 +37,14 @@ def frequent_words(text, k):
 
     return list(frequent_words)`,
   array: `def symbol_to_number(symbol):
-    mapping = {"A": 0, "T": 1, "C": 2, "G": 3}
-    return mapping[symbol]
+    mapping = {"A": 0, "C": 1, "G": 2, "T": 3}
+    upper_symbol = symbol.upper()
+
+    if upper_symbol not in mapping:
+        print("Invalid symbol")
+        return None
+
+    return mapping[upper_symbol]
 
 def pattern_to_number(pattern):
     if len(pattern) == 1:
@@ -57,7 +63,37 @@ def computing_frequencies(text, k):
         j = pattern_to_number(pattern)
         frequency_array[j] += 1
 
-    return frequency_array`,
+    return frequency_array
+
+def number_to_symbol(number):
+    mapping = {0: "A", 1: "C", 2: "G", 3: "T"}
+
+    if number not in mapping:
+        print("Invalid number")
+        return None
+
+    return mapping[number]
+
+def number_to_pattern(index, k):
+    if k == 1:
+        return number_to_symbol(index)
+
+    prefix_index = index // 4
+    remainder = index % 4
+
+    return number_to_pattern(prefix_index, k - 1) + number_to_symbol(remainder)
+
+def faster_frequent_words(text, k):
+    frequent_patterns = set([])
+    frequency_array = computing_frequencies(text, k)
+    max_count = max(frequency_array)
+
+    for i in range(0, 4 ** k):
+        if frequency_array[i] == max_count:
+            pattern = number_to_pattern(i, k)
+            frequent_patterns.add(pattern)
+
+    return list(frequent_patterns)`,
   dict: `def computing_frequencies_dict(text, k):
     frequency_array = dict([])
 
@@ -138,12 +174,16 @@ const approaches = [
 ];
 
 function cleanDna(value) {
-  return value.replace(/\s+/g, "").toUpperCase().replace(/[^ACGT]/g, "");
+  return value.replace(/\s+/g, "").toUpperCase();
+}
+
+function isDna(value) {
+  return /^[ACGT]+$/.test(value);
 }
 
 function TextWindow({ text, activeStart, k }) {
   return (
-    <div className="max-w-full overflow-x-auto rounded-lg border border-slate-200 bg-slate-50 p-4">
+    <div className="mx-auto w-full max-w-4xl overflow-x-auto rounded-lg border border-slate-200 bg-slate-50 p-4">
       <div className="flex w-max gap-1 font-mono text-sm">
         {text.split("").map((symbol, index) => {
           const active = index >= activeStart && index < activeStart + k;
@@ -175,7 +215,7 @@ function TextWindow({ text, activeStart, k }) {
 function ApproachStepExplanation({ activeApproach, activeStep }) {
   if (activeApproach === "array") {
     return (
-      <div className="rounded-lg border border-slate-200 p-4">
+      <div className="mx-auto w-full max-w-4xl rounded-lg border border-slate-200 p-4">
         <p className="font-semibold">Šta radi optimizacija nizom frekvencija?</p>
         <p className="mt-2 leading-7 text-slate-600">
           Trenutni k-mer{" "}
@@ -191,7 +231,7 @@ function ApproachStepExplanation({ activeApproach, activeStep }) {
 
   if (activeApproach === "dict") {
     return (
-      <div className="rounded-lg border border-slate-200 p-4">
+      <div className="mx-auto w-full max-w-4xl rounded-lg border border-slate-200 p-4">
         <p className="font-semibold">Šta radi optimizacija heš mapom?</p>
         <p className="mt-2 leading-7 text-slate-600">
           Trenutni k-mer{" "}
@@ -206,7 +246,7 @@ function ApproachStepExplanation({ activeApproach, activeStep }) {
 
   if (activeApproach === "sorting") {
     return (
-      <div className="rounded-lg border border-slate-200 p-4">
+      <div className="mx-auto w-full max-w-4xl rounded-lg border border-slate-200 p-4">
         <p className="font-semibold">Šta radi pristup sortiranjem?</p>
         <p className="mt-2 leading-7 text-slate-600">
           Trenutni k-mer{" "}
@@ -221,7 +261,7 @@ function ApproachStepExplanation({ activeApproach, activeStep }) {
   }
 
   return (
-    <div className="rounded-lg border border-slate-200 p-4">
+    <div className="mx-auto w-full max-w-4xl rounded-lg border border-slate-200 p-4">
       <p className="font-semibold">Šta radi naivni algoritam?</p>
       <p className="mt-2 leading-7 text-slate-600">
         Algoritam posmatra podnisku{" "}
@@ -237,20 +277,30 @@ function ApproachStepExplanation({ activeApproach, activeStep }) {
 
 function ApproachVisualDetails({ activeApproach, analysis, activeStep }) {
   if (activeApproach === "array") {
+    const runningCountsByIndex = analysis.windows
+      .slice(0, activeStep.index + 1)
+      .reduce((counts, window) => {
+        counts[window.numericIndex] = (counts[window.numericIndex] || 0) + 1;
+        return counts;
+      }, {});
     const visibleItems = analysis.canShowArray
       ? analysis.windows.reduce((items, window) => {
           if (items.some((item) => item.index === window.numericIndex)) {
             return items;
           }
 
-          items.push(analysis.frequencyArray[window.numericIndex]);
+          const frequencyItem = analysis.frequencyArray[window.numericIndex];
+          items.push({
+            ...frequencyItem,
+            count: runningCountsByIndex[window.numericIndex] || 0,
+          });
           return items;
         }, [])
       : [];
     const cellWidth = Math.max(48, activeStep.pattern.length * 12 + 24);
 
     return (
-      <div className="rounded-lg border border-slate-200 p-4">
+      <div className="mx-auto w-full max-w-4xl rounded-lg border border-slate-200 p-4">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <p className="font-semibold">Niz frekvencija</p>
           <span className="font-mono text-sm text-slate-500">
@@ -320,7 +370,7 @@ function ApproachVisualDetails({ activeApproach, analysis, activeStep }) {
       }, {});
 
     return (
-      <div className="rounded-lg border border-slate-200 p-4">
+      <div className="mx-auto w-full max-w-4xl rounded-lg border border-slate-200 p-4">
         <p className="font-semibold">Stanje rečnika posle ovog koraka</p>
         <div className="mt-4 flex max-h-56 flex-wrap gap-2 overflow-auto">
           {Object.entries(entriesUntilStep)
@@ -346,6 +396,16 @@ function ApproachVisualDetails({ activeApproach, analysis, activeStep }) {
     const activeGroup = analysis.sortedGroups.find(
       (group) => group.index === activeStep.numericIndex,
     );
+    const sortedItems = analysis.sortedIndex.reduce((items, item) => {
+      const previousSameIndexCount = items.filter(
+        (existing) => existing.index === item.index,
+      ).length;
+      items.push({
+        ...item,
+        runningCount: previousSameIndexCount + 1,
+      });
+      return items;
+    }, []);
     const originalItems = analysis.windows.map((item) => ({
       count: 1,
       index: item.numericIndex,
@@ -355,7 +415,7 @@ function ApproachVisualDetails({ activeApproach, analysis, activeStep }) {
     const cellWidth = Math.max(48, activeStep.pattern.length * 12 + 24);
 
     return (
-      <div className="rounded-lg border border-slate-200 p-4">
+      <div className="mx-auto w-full max-w-4xl rounded-lg border border-slate-200 p-4">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <p className="font-semibold">Izdvajanje, transformacija i sortiranje</p>
           <span className="font-mono text-sm text-slate-500">
@@ -402,38 +462,38 @@ function ApproachVisualDetails({ activeApproach, analysis, activeStep }) {
             <div
               className="grid w-max gap-y-2 text-center font-mono text-sm"
               style={{
-                gridTemplateColumns: `88px repeat(${analysis.sortedGroups.length}, ${cellWidth}px)`,
+                gridTemplateColumns: `88px repeat(${sortedItems.length}, ${cellWidth}px)`,
               }}
             >
               <div className="pr-4 text-right font-sans text-slate-600">k-mer</div>
-              {analysis.sortedGroups.map((group) => (
+              {sortedItems.map((item) => (
                 <div
-                  className={group.index === activeStep.numericIndex ? "font-bold text-blue-700" : ""}
-                  key={`sorted-pattern-${group.index}`}
+                  className={item.originalPosition === activeStep.index ? "font-bold text-blue-700" : ""}
+                  key={`sorted-pattern-${item.originalPosition}`}
                 >
-                  {group.pattern}
+                  {item.pattern}
                 </div>
               ))}
               <div className="pr-4 text-right font-sans text-slate-600">SORTED INDEX</div>
-              {analysis.sortedGroups.map((group) => (
+              {sortedItems.map((item) => (
                 <div
-                  className={group.index === activeStep.numericIndex ? "font-bold text-blue-700" : ""}
-                  key={`sorted-index-${group.index}`}
+                  className={item.originalPosition === activeStep.index ? "font-bold text-blue-700" : ""}
+                  key={`sorted-index-${item.originalPosition}`}
                 >
-                  {group.index}
+                  {item.index}
                 </div>
               ))}
               <div className="pr-4 text-right font-sans text-slate-600">COUNT</div>
-              {analysis.sortedGroups.map((group) => (
+              {sortedItems.map((item) => (
                 <div
                   className={`rounded-md px-2 py-1 ${
-                    group.index === activeStep.numericIndex
+                    item.originalPosition === activeStep.index
                       ? "bg-blue-600 font-bold text-white"
                       : "bg-white text-slate-700"
                   }`}
-                  key={`sorted-count-${group.index}`}
+                  key={`sorted-count-${item.originalPosition}`}
                 >
-                  {group.count}
+                  {item.runningCount}
                 </div>
               ))}
             </div>
@@ -453,7 +513,7 @@ function ApproachVisualDetails({ activeApproach, analysis, activeStep }) {
   }
 
   return (
-    <div className="rounded-lg border border-slate-200 p-4">
+    <div className="mx-auto w-full max-w-4xl rounded-lg border border-slate-200 p-4">
       <p className="font-semibold">Pojavljivanja trenutnog k-mera</p>
       <div className="mt-4 flex flex-wrap gap-2">
         {activeStep.positions.map((position) => (
@@ -479,7 +539,8 @@ export default function FrequentWordsClient() {
 
   const cleanedText = useMemo(() => cleanDna(text), [text]);
   const safeK = Math.max(1, Number(k) || 1);
-  const invalid = cleanedText.length === 0 || safeK > cleanedText.length;
+  const invalidAlphabet = cleanedText.length > 0 && !isDna(cleanedText);
+  const invalid = cleanedText.length === 0 || invalidAlphabet || safeK > cleanedText.length;
   const analysis = invalid ? null : apiResult?.analysis;
   const activeStep = analysis?.windows[Math.min(step, analysis.windows.length - 1)];
   const activeApproachData = approaches.find((item) => item.id === activeApproach);
@@ -502,28 +563,31 @@ export default function FrequentWordsClient() {
     }
 
     const controller = new AbortController();
-    Promise.resolve().then(() => setApiResult(null));
-    Promise.resolve().then(() => setApiError(false));
-    fetch(`${API_BASE}/api/frequent-words`, {
-      body: JSON.stringify({ genome: cleanedText, k: safeK }),
-      headers: { "Content-Type": "application/json" },
-      method: "POST",
-      signal: controller.signal,
-    })
-      .then((response) => (response.ok ? response.json() : null))
-      .then((data) => {
-        if (data) {
-          setApiResult(data);
-          setApiError(false);
-        }
+    const timeout = setTimeout(() => {
+      Promise.resolve().then(() => setApiError(false));
+      fetch(`${API_BASE}/api/frequent-words`, {
+        body: JSON.stringify({ genome: cleanedText, k: safeK }),
+        headers: { "Content-Type": "application/json" },
+        method: "POST",
+        signal: controller.signal,
       })
-      .catch((error) => {
-        if (error.name === "AbortError") return;
-        setApiResult(null);
-        setApiError(true);
-      });
+        .then((response) => (response.ok ? response.json() : null))
+        .then((data) => {
+          if (data) {
+            setApiResult(data);
+            setApiError(false);
+          }
+        })
+        .catch((error) => {
+          if (error.name === "AbortError") return;
+          setApiError(true);
+        });
+    }, 250);
 
-    return () => controller.abort();
+    return () => {
+      clearTimeout(timeout);
+      controller.abort();
+    };
   }, [cleanedText, invalid, safeK]);
 
   function runVisualization() {
@@ -623,22 +687,15 @@ export default function FrequentWordsClient() {
                 <h2 className="mt-2 text-2xl font-bold">Pokretanje algoritma</h2>
                 <p className="mt-1 text-sm text-slate-500">{activeApproachData.title}</p>
               </div>
-              <button
-                className="rounded-lg bg-slate-950 px-4 py-2 text-sm font-bold text-white transition hover:bg-blue-700"
-                onClick={runVisualization}
-                type="button"
-              >
-                Pokreni od početka
-              </button>
             </div>
 
-            <div className="mt-5 grid gap-4 rounded-lg bg-slate-50 p-4">
+            <div className="mx-auto mt-5 grid w-full max-w-4xl gap-4 rounded-lg bg-slate-50 p-4">
               <label className="grid gap-2 text-sm font-semibold text-slate-700">
                 DNK sekvenca
                 <textarea
-                  className="min-h-20 rounded-lg border border-slate-200 bg-white p-3 font-mono text-sm font-medium outline-none transition focus:border-blue-400 focus:ring-4 focus:ring-blue-100"
+                  className="min-h-16 resize-y rounded-lg border border-slate-200 bg-white p-3 font-mono text-sm font-medium outline-none transition focus:border-blue-400 focus:ring-4 focus:ring-blue-100"
                   onChange={(event) => {
-                    setText(event.target.value);
+                    setText(event.target.value.toUpperCase());
                     setStep(0);
                   }}
                   value={text}
@@ -649,7 +706,7 @@ export default function FrequentWordsClient() {
                 <label className="grid gap-2 text-sm font-semibold text-slate-700">
                   k
                   <input
-                    className="w-24 rounded-lg border border-slate-200 p-3 font-mono outline-none transition focus:border-blue-400 focus:ring-4 focus:ring-blue-100"
+                    className="w-20 min-w-0 rounded-lg border border-slate-200 px-3 py-2 font-mono outline-none transition focus:border-blue-400 focus:ring-4 focus:ring-blue-100"
                     min="1"
                     onChange={(event) => {
                       setK(event.target.value);
@@ -659,15 +716,16 @@ export default function FrequentWordsClient() {
                     value={k}
                   />
                 </label>
-                <p className="pb-3 text-sm text-slate-500">
-                  |Tekst| = <span className="font-mono font-bold">{cleanedText.length}</span>
+                <p className="pb-2 text-sm text-slate-500">
+                  Dužina teksta:{" "}
+                  <span className="font-mono font-bold">{cleanedText.length}</span>
                 </p>
               </div>
             </div>
 
             {invalid && (
               <div className="mt-5 rounded-lg border border-red-200 bg-red-50 p-4 text-sm font-semibold text-red-700">
-                Unesi DNK sekvencu sa slovima A, C, G i T i vrednost k koja nije veća od dužine sekvence.
+                Unos sme da sadrži samo slova A, C, T i G, a vrednost k ne sme biti veća od dužine sekvence.
               </div>
             )}
 
@@ -681,7 +739,7 @@ export default function FrequentWordsClient() {
               <div className="mt-5 space-y-4">
                 <TextWindow text={cleanedText} activeStart={activeStep.index} k={safeK} />
 
-                <div className="grid gap-3 md:grid-cols-3">
+                <div className="mx-auto grid w-full max-w-4xl gap-3 md:grid-cols-3">
                   <div className="rounded-lg bg-slate-50 p-3">
                     <p className="text-sm text-slate-500">Korak</p>
                     <p className="mt-1 text-2xl font-bold">
@@ -706,19 +764,23 @@ export default function FrequentWordsClient() {
                   </div>
                 </div>
 
-                <div className="flex flex-wrap items-center justify-between gap-3 rounded-lg border border-slate-200 bg-white p-3">
+                <div className="mx-auto flex w-full max-w-4xl flex-wrap items-center justify-between gap-3 rounded-lg border border-slate-200 bg-white p-3">
                   <button
-                    className="rounded-lg border border-slate-200 px-4 py-2 text-sm font-bold text-slate-700 transition hover:border-blue-300 hover:bg-blue-50 hover:text-blue-700"
+                    className="rounded-lg border border-slate-200 px-3 py-2 text-sm font-bold text-slate-700 transition hover:border-blue-300 hover:bg-blue-50 hover:text-blue-700"
                     onClick={previousStep}
                     type="button"
                   >
                     Prethodni korak
                   </button>
-                  <span className="rounded-full bg-slate-100 px-4 py-2 text-sm font-bold text-slate-700">
-                    Korak {activeStep.index + 1} od {analysis.windows.length}
-                  </span>
                   <button
-                    className="rounded-lg bg-blue-600 px-4 py-2 text-sm font-bold text-white transition hover:bg-blue-700"
+                    className="rounded-lg bg-slate-950 px-3 py-2 text-sm font-bold text-white transition hover:bg-blue-700"
+                    onClick={runVisualization}
+                    type="button"
+                  >
+                    Pokreni od početka
+                  </button>
+                  <button
+                    className="rounded-lg bg-blue-600 px-3 py-2 text-sm font-bold text-white transition hover:bg-blue-700"
                     onClick={nextStep}
                     type="button"
                   >
@@ -767,3 +829,4 @@ export default function FrequentWordsClient() {
     </main>
   );
 }
+

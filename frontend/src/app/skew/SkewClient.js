@@ -31,16 +31,26 @@ def minimum_skew(genome):
     return positions`;
 
 function cleanDna(value) {
-  return value.replace(/\s+/g, "").toUpperCase().replace(/[^ACGT]/g, "");
+  return value.replace(/\s+/g, "").toUpperCase();
+}
+
+function isDna(value) {
+  return /^[ACGT]+$/.test(value);
 }
 
 function SkewChart({ activeIndex, analysis }) {
-  const width = 680;
-  const height = 260;
-  const padding = 34;
+  const width = 560;
+  const height = 210;
+  const padding = 30;
   const spanX = Math.max(1, analysis.values.length - 1);
   const spanY = Math.max(1, analysis.maximum - analysis.minimum);
   const yZero = padding + ((analysis.maximum - 0) / spanY) * (height - padding * 2);
+  const visibleValues = analysis.values.slice(0, activeIndex + 1);
+  const visibleMinimum = Math.min(...visibleValues);
+  const visibleMinimumPositions = visibleValues
+    .map((value, index) => ({ index, value }))
+    .filter((item) => item.value === visibleMinimum)
+    .map((item) => item.index);
 
   function point(index, value) {
     const x = padding + (index / spanX) * (width - padding * 2);
@@ -48,7 +58,7 @@ function SkewChart({ activeIndex, analysis }) {
     return { x, y };
   }
 
-  const points = analysis.values
+  const points = visibleValues
     .map((value, index) => {
       const { x, y } = point(index, value);
       return `${x},${y}`;
@@ -57,9 +67,9 @@ function SkewChart({ activeIndex, analysis }) {
   const activePoint = point(activeIndex, analysis.values[activeIndex]);
 
   return (
-    <div className="overflow-x-auto rounded-lg border border-slate-200 bg-slate-50 p-4">
+    <div className="mx-auto w-full max-w-4xl overflow-x-auto rounded-lg border border-slate-200 bg-slate-50 p-4">
       <svg
-        className="h-auto min-w-[620px]"
+        className="mx-auto h-auto w-full max-w-[560px] min-w-[420px]"
         role="img"
         viewBox={`0 0 ${width} ${height}`}
       >
@@ -96,8 +106,8 @@ function SkewChart({ activeIndex, analysis }) {
           strokeLinejoin="round"
           strokeWidth="4"
         />
-        {analysis.minimumPositions.map((position) => {
-          const marker = point(position, analysis.minimum);
+        {visibleMinimumPositions.map((position) => {
+          const marker = point(position, visibleMinimum);
           return (
             <circle
               cx={marker.x}
@@ -125,7 +135,7 @@ function SkewChart({ activeIndex, analysis }) {
 
 function GenomeStrip({ activeIndex, genome }) {
   return (
-    <div className="max-w-full overflow-x-auto rounded-lg border border-slate-200 bg-slate-50 p-4">
+    <div className="mx-auto w-full max-w-4xl overflow-x-auto rounded-lg border border-slate-200 bg-slate-50 p-4">
       <div className="flex w-max gap-1 font-mono text-sm">
         {genome.split("").map((symbol, index) => {
           const active = index === activeIndex - 1;
@@ -163,7 +173,7 @@ function StepExplanation({ step }) {
         : "vrednost ostaje nepromenjena";
 
   return (
-    <div className="rounded-lg border border-slate-200 p-4">
+    <div className="mx-auto w-full max-w-4xl rounded-lg border border-slate-200 p-4">
       <p className="font-semibold">Šta radi ovaj korak?</p>
       <p className="mt-2 leading-7 text-slate-600">
         Na poziciji <span className="font-mono font-bold">{step.index}</span> nalazi se
@@ -223,8 +233,9 @@ export default function SkewClient() {
   const [apiError, setApiError] = useState(false);
 
   const cleanedGenome = useMemo(() => cleanDna(genome), [genome]);
-  const invalid = cleanedGenome.length === 0;
-  const analysis = apiAnalysis;
+  const invalidAlphabet = cleanedGenome.length > 0 && !isDna(cleanedGenome);
+  const invalid = cleanedGenome.length === 0 || invalidAlphabet;
+  const analysis = invalid ? null : apiAnalysis;
   const activeIndex = analysis ? Math.min(step, analysis.values.length - 1) : 0;
   const activeStep = analysis?.steps[activeIndex - 1];
 
@@ -236,27 +247,31 @@ export default function SkewClient() {
     }
 
     const controller = new AbortController();
-    Promise.resolve().then(() => setApiError(false));
-    fetch(`${API_BASE}/api/skew`, {
-      body: JSON.stringify({ genome: cleanedGenome }),
-      headers: { "Content-Type": "application/json" },
-      method: "POST",
-      signal: controller.signal,
-    })
-      .then((response) => (response.ok ? response.json() : null))
-      .then((data) => {
-        if (data) {
-          setApiAnalysis(data);
-          setApiError(false);
-        }
+    const timeout = setTimeout(() => {
+      Promise.resolve().then(() => setApiError(false));
+      fetch(`${API_BASE}/api/skew`, {
+        body: JSON.stringify({ genome: cleanedGenome }),
+        headers: { "Content-Type": "application/json" },
+        method: "POST",
+        signal: controller.signal,
       })
-      .catch((error) => {
-        if (error.name === "AbortError") return;
-        setApiAnalysis(null);
-        setApiError(true);
-      });
+        .then((response) => (response.ok ? response.json() : null))
+        .then((data) => {
+          if (data) {
+            setApiAnalysis(data);
+            setApiError(false);
+          }
+        })
+        .catch((error) => {
+          if (error.name === "AbortError") return;
+          setApiError(true);
+        });
+    }, 250);
 
-    return () => controller.abort();
+    return () => {
+      clearTimeout(timeout);
+      controller.abort();
+    };
   }, [cleanedGenome, invalid]);
 
   function resetStep() {
@@ -325,35 +340,29 @@ export default function SkewClient() {
                   G povećava vrednost, C je smanjuje, A i T je ne menjaju.
                 </p>
               </div>
-              <button
-                className="rounded-lg bg-slate-950 px-4 py-2 text-sm font-bold text-white transition hover:bg-blue-700"
-                onClick={resetStep}
-                type="button"
-              >
-                Pokreni od početka
-              </button>
             </div>
 
-            <div className="mt-5 grid gap-4 rounded-lg bg-slate-50 p-4">
+            <div className="mx-auto mt-5 grid w-full max-w-4xl gap-4 rounded-lg bg-slate-50 p-4">
               <label className="grid gap-2 text-sm font-semibold text-slate-700">
                 DNK sekvenca
                 <textarea
-                  className="min-h-20 rounded-lg border border-slate-200 bg-white p-3 font-mono text-sm font-medium outline-none transition focus:border-blue-400 focus:ring-4 focus:ring-blue-100"
+                  className="min-h-16 resize-y rounded-lg border border-slate-200 bg-white p-3 font-mono text-sm font-medium outline-none transition focus:border-blue-400 focus:ring-4 focus:ring-blue-100"
                   onChange={(event) => {
-                    setGenome(event.target.value);
+                    setGenome(event.target.value.toUpperCase());
                     setStep(1);
                   }}
                   value={genome}
                 />
               </label>
               <p className="text-sm text-slate-500">
-                |Genom| = <span className="font-mono font-bold">{cleanedGenome.length}</span>
+                Dužina genoma:{" "}
+                <span className="font-mono font-bold">{cleanedGenome.length}</span>
               </p>
             </div>
 
             {invalid && (
               <div className="mt-5 rounded-lg border border-red-200 bg-red-50 p-4 text-sm font-semibold text-red-700">
-                Unesi DNK sekvencu sa slovima A, C, G i T.
+                Unos sme da sadrži samo slova A, C, T i G.
               </div>
             )}
 
@@ -368,7 +377,7 @@ export default function SkewClient() {
                 <GenomeStrip activeIndex={activeIndex} genome={cleanedGenome} />
                 <SkewChart activeIndex={activeIndex} analysis={analysis} />
 
-                <div className="grid gap-3 md:grid-cols-3">
+                <div className="mx-auto grid w-full max-w-4xl gap-3 md:grid-cols-3">
                   <div className="rounded-lg bg-slate-50 p-3">
                     <p className="text-sm text-slate-500">Pozicija</p>
                     <p className="mt-1 text-2xl font-bold">
@@ -385,19 +394,23 @@ export default function SkewClient() {
                   </div>
                 </div>
 
-                <div className="flex flex-wrap items-center justify-between gap-3 rounded-lg border border-slate-200 bg-white p-3">
+                <div className="mx-auto flex w-full max-w-4xl flex-wrap items-center justify-between gap-3 rounded-lg border border-slate-200 bg-white p-3">
                   <button
-                    className="rounded-lg border border-slate-200 px-4 py-2 text-sm font-bold text-slate-700 transition hover:border-blue-300 hover:bg-blue-50 hover:text-blue-700"
+                    className="rounded-lg border border-slate-200 px-3 py-2 text-sm font-bold text-slate-700 transition hover:border-blue-300 hover:bg-blue-50 hover:text-blue-700"
                     onClick={previousStep}
                     type="button"
                   >
                     Prethodna pozicija
                   </button>
-                  <span className="rounded-full bg-slate-100 px-4 py-2 text-sm font-bold text-slate-700">
-                    Pozicija {activeIndex} od {cleanedGenome.length}
-                  </span>
                   <button
-                    className="rounded-lg bg-blue-600 px-4 py-2 text-sm font-bold text-white transition hover:bg-blue-700"
+                    className="rounded-lg bg-slate-950 px-3 py-2 text-sm font-bold text-white transition hover:bg-blue-700"
+                    onClick={resetStep}
+                    type="button"
+                  >
+                    Pokreni od početka
+                  </button>
+                  <button
+                    className="rounded-lg bg-blue-600 px-3 py-2 text-sm font-bold text-white transition hover:bg-blue-700"
                     onClick={nextStep}
                     type="button"
                   >
@@ -407,7 +420,7 @@ export default function SkewClient() {
 
                 <StepExplanation step={activeStep} />
 
-                <div className="rounded-lg border border-slate-200 p-4">
+                <div className="mx-auto w-full max-w-4xl rounded-lg border border-slate-200 p-4">
                   <p className="font-semibold">Niz vrednosti</p>
                   <p className="mt-2 text-sm leading-6 text-slate-600">
                     Zelenom bojom su označene pozicije na kojima funkcija dostiže minimum.
@@ -452,3 +465,4 @@ export default function SkewClient() {
     </main>
   );
 }
+

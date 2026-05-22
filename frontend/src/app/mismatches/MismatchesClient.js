@@ -49,6 +49,15 @@ const sections = [
   },
 ];
 
+const complexities = {
+  hamming: "O(k)",
+  matching: "O(|Tekst| · k)",
+  neighbors: "O(k · |Susedstvo|)",
+  frequent: "O(|Tekst| · |Susedstvo| + |Kandidati| · |Tekst| · k)",
+  frequentDict: "O(|Tekst| · |Susedstvo| + |Kandidati| · |Tekst| · k)",
+  reverse: "O(|Tekst| · |Susedstvo| + |Kandidati| · |Tekst| · k)",
+};
+
 const codeSamples = {
   hamming: `def hamming_distance(p, q):
     distance = 0
@@ -604,9 +613,7 @@ export default function MismatchesClient() {
               </div>
               <span className="rounded-full bg-slate-100 px-3 py-1 text-sm font-semibold text-slate-700">
                 Vremenska složenost:{" "}
-                <span className="font-mono font-bold">
-                  {activeSection === "hamming" ? "O(k)" : activeSection === "matching" ? "O(|Tekst| * k)" : "zavisno od |Susedstvo|"}
-                </span>
+                <span className="font-mono font-bold">{complexities[activeSection]}</span>
               </span>
             </div>
             <pre className="mt-4 max-h-[300px] overflow-auto rounded-lg bg-slate-950 p-4 text-sm leading-6 text-slate-100">

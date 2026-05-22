@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+import LoadingState from "@/components/LoadingState";
 
 const DEFAULT_TEXT =
   "CATAAATTTCGTATGTATCAAAATTTTGTTACTATCACATAAATTTCGTATGTATCAAAATTTTGTTACTATCA";
@@ -298,6 +299,7 @@ export default function MismatchesClient() {
   const [apiHammingResult, setApiHammingResult] = useState(null);
   const [apiNeighborItems, setApiNeighborItems] = useState(null);
   const [apiError, setApiError] = useState(false);
+  const [apiLoadingCount, setApiLoadingCount] = useState(0);
 
   const cleanedHammingFirst = useMemo(() => cleanDna(hammingFirst), [hammingFirst]);
   const cleanedHammingSecond = useMemo(() => cleanDna(hammingSecond), [hammingSecond]);
@@ -347,6 +349,16 @@ export default function MismatchesClient() {
   const approximate = apiApproximate || { count: 0, positions: [] };
   const hammingResult = apiHammingResult;
   const candidateCount = analysis?.candidateSet?.size ?? analysis?.candidateSetSize ?? 0;
+  const apiLoading = apiLoadingCount > 0;
+  const activeVisualizationLoading =
+    apiLoading &&
+    !apiError &&
+    !invalid &&
+    (activeSection === "hamming"
+      ? hammingResult === null
+      : activeSection === "neighbors"
+        ? apiNeighborItems === null
+        : analysis === null);
 
   useEffect(() => {
     const controller = new AbortController();
@@ -354,6 +366,7 @@ export default function MismatchesClient() {
     if (!invalidHamming) {
       const timeout = setTimeout(() => {
         Promise.resolve().then(() => setApiError(false));
+        setApiLoadingCount((current) => current + 1);
         fetch(`${API_BASE}/api/mismatches/hamming`, {
           body: JSON.stringify({ first: cleanedHammingFirst, second: cleanedHammingSecond }),
           headers: { "Content-Type": "application/json" },
@@ -368,6 +381,9 @@ export default function MismatchesClient() {
           .catch((error) => {
             if (error.name === "AbortError") return;
             setApiError(true);
+          })
+          .finally(() => {
+            setApiLoadingCount((current) => Math.max(0, current - 1));
           });
       }, 250);
 
@@ -388,6 +404,7 @@ export default function MismatchesClient() {
     if (!invalidNeighbors) {
       const timeout = setTimeout(() => {
         Promise.resolve().then(() => setApiError(false));
+        setApiLoadingCount((current) => current + 1);
         fetch(`${API_BASE}/api/mismatches/neighbors`, {
           body: JSON.stringify({ pattern: cleanedPattern, d: safeD }),
           headers: { "Content-Type": "application/json" },
@@ -402,6 +419,9 @@ export default function MismatchesClient() {
           .catch((error) => {
             if (error.name === "AbortError") return;
             setApiError(true);
+          })
+          .finally(() => {
+            setApiLoadingCount((current) => Math.max(0, current - 1));
           });
       }, 250);
 
@@ -422,6 +442,7 @@ export default function MismatchesClient() {
     if (!invalidMatching) {
       const timeout = setTimeout(() => {
         Promise.resolve().then(() => setApiError(false));
+        setApiLoadingCount((current) => current + 1);
         fetch(`${API_BASE}/api/mismatches/approximate-count`, {
           body: JSON.stringify({ text: cleanedText, pattern: cleanedPattern, d: safeD }),
           headers: { "Content-Type": "application/json" },
@@ -436,6 +457,9 @@ export default function MismatchesClient() {
           .catch((error) => {
             if (error.name === "AbortError") return;
             setApiError(true);
+          })
+          .finally(() => {
+            setApiLoadingCount((current) => Math.max(0, current - 1));
           });
       }, 250);
 
@@ -461,6 +485,7 @@ export default function MismatchesClient() {
     if (!analysisInvalid && activeSection !== "hamming" && activeSection !== "neighbors") {
       const timeout = setTimeout(() => {
         Promise.resolve().then(() => setApiError(false));
+        setApiLoadingCount((current) => current + 1);
         fetch(`${API_BASE}/api/mismatches/analyze`, {
           body: JSON.stringify({ text: cleanedText, pattern: patternForWindows, k: safeK, d: safeD }),
           headers: { "Content-Type": "application/json" },
@@ -475,6 +500,9 @@ export default function MismatchesClient() {
           .catch((error) => {
             if (error.name === "AbortError") return;
             setApiError(true);
+          })
+          .finally(() => {
+            setApiLoadingCount((current) => Math.max(0, current - 1));
           });
       }, 250);
 
@@ -752,6 +780,8 @@ export default function MismatchesClient() {
                 Backend nije dostupan. Pokreni FastAPI server da bi se rezultati izračunali.
               </div>
             )}
+
+            {activeVisualizationLoading && <LoadingState />}
 
             {!invalid && activeSection === "hamming" && hammingResult !== null && (
               <div className="mt-5 space-y-4">

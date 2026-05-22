@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+import LoadingState from "@/components/LoadingState";
 
 const EXAMPLE_GENOME = "CCATGTAGCGAGTGATC";
 const API_BASE = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:8000";
@@ -231,6 +232,7 @@ export default function SkewClient() {
   const [step, setStep] = useState(1);
   const [apiAnalysis, setApiAnalysis] = useState(null);
   const [apiError, setApiError] = useState(false);
+  const [apiLoading, setApiLoading] = useState(false);
 
   const cleanedGenome = useMemo(() => cleanDna(genome), [genome]);
   const invalidAlphabet = cleanedGenome.length > 0 && !isDna(cleanedGenome);
@@ -243,12 +245,14 @@ export default function SkewClient() {
     if (invalid) {
       Promise.resolve().then(() => setApiAnalysis(null));
       Promise.resolve().then(() => setApiError(false));
+      Promise.resolve().then(() => setApiLoading(false));
       return;
     }
 
     const controller = new AbortController();
     const timeout = setTimeout(() => {
       Promise.resolve().then(() => setApiError(false));
+      Promise.resolve().then(() => setApiLoading(true));
       fetch(`${API_BASE}/api/skew`, {
         body: JSON.stringify({ genome: cleanedGenome }),
         headers: { "Content-Type": "application/json" },
@@ -265,6 +269,9 @@ export default function SkewClient() {
         .catch((error) => {
           if (error.name === "AbortError") return;
           setApiError(true);
+        })
+        .finally(() => {
+          setApiLoading(false);
         });
     }, 250);
 
@@ -371,6 +378,8 @@ export default function SkewClient() {
                 Backend nije dostupan. Pokreni FastAPI server da bi se rezultati izračunali.
               </div>
             )}
+
+            {!invalid && apiLoading && !analysis && !apiError && <LoadingState />}
 
             {analysis && activeStep && (
               <div className="mt-5 space-y-4">

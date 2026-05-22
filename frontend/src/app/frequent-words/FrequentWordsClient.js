@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+import LoadingState from "@/components/LoadingState";
 
 const EXAMPLE_TEXT =
   "ACTGACTCCCACCCC";
@@ -536,6 +537,7 @@ export default function FrequentWordsClient() {
   const [step, setStep] = useState(0);
   const [apiResult, setApiResult] = useState(null);
   const [apiError, setApiError] = useState(false);
+  const [apiLoading, setApiLoading] = useState(false);
 
   const cleanedText = useMemo(() => cleanDna(text), [text]);
   const safeK = Math.max(1, Number(k) || 1);
@@ -559,12 +561,14 @@ export default function FrequentWordsClient() {
     if (invalid) {
       Promise.resolve().then(() => setApiResult(null));
       Promise.resolve().then(() => setApiError(false));
+      Promise.resolve().then(() => setApiLoading(false));
       return;
     }
 
     const controller = new AbortController();
     const timeout = setTimeout(() => {
       Promise.resolve().then(() => setApiError(false));
+      Promise.resolve().then(() => setApiLoading(true));
       fetch(`${API_BASE}/api/frequent-words`, {
         body: JSON.stringify({ genome: cleanedText, k: safeK }),
         headers: { "Content-Type": "application/json" },
@@ -581,6 +585,9 @@ export default function FrequentWordsClient() {
         .catch((error) => {
           if (error.name === "AbortError") return;
           setApiError(true);
+        })
+        .finally(() => {
+          setApiLoading(false);
         });
     }, 250);
 
@@ -734,6 +741,8 @@ export default function FrequentWordsClient() {
                 Backend nije dostupan. Pokreni FastAPI server da bi se rezultati izračunali.
               </div>
             )}
+
+            {!invalid && apiLoading && !analysis && !apiError && <LoadingState />}
 
             {analysis && activeStep && (
               <div className="mt-5 space-y-4">

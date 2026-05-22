@@ -1,6 +1,6 @@
 export default function LoadingState({
-  title = "Vizualizacija se ucitava",
-  message = "Prvi prikaz posle deploy-a moze potrajati nekoliko sekundi dok se server pokrene i podaci obrade.",
+  title = "Vizualizacija se učitava",
+  message = "Molimo sačekajte nekoliko sekundi.",
 }) {
   return (
     <div className="mx-auto mt-5 flex w-full max-w-4xl items-center gap-3 rounded-lg border border-blue-200 bg-blue-50 p-4 text-blue-900">

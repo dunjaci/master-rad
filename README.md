@@ -2,7 +2,7 @@
 
 Ovaj rad predstavlja elektronsku lekciju posvećenu pronalasku početnog regiona replikacije DNK, odnosno oriC regiona. Aplikacija prikazuje kako se primenom algoritama nad DNK sekvencama mogu uočiti obrasci koji ukazuju na moguće mesto početka replikacije.
 
-Lekcija obuhvata teorijsko objašnjenje i interaktivnu vizualizaciju problema čestih reči, pronalaženja grupa k-mera, GC-skew dijagrama, Hamingove distance i približnih poklapanja. Korisnik može da unese DNK sekvencu, podesi parametre algoritama i prati izvršavanje postupka korak po korak, čime se olakšava razumevanje načina na koji se izdvajaju kandidati za oriC region.
+Lekcija obuhvata teorijsko objašnjenje i interaktivnu vizuelizaciju problema čestih reči, pronalaženja grupa k-mera, GC-skew dijagrama, Hamingove distance i približnih poklapanja. Korisnik može da unese DNK sekvencu, podesi parametre algoritama i prati izvršavanje postupka korak po korak, čime se olakšava razumevanje načina na koji se izdvajaju kandidati za oriC region.
 
 # Sadržaj
 
@@ -64,7 +64,7 @@ Za lokalno pokretanje koristi se vrednost **http://localhost:8000**.
 
 ## Deployovana verzija
 
-Deploy aplikacije je podeljen na dve komponente. Frontend deo aplikacije deployovan je na **Vercel** platformi i služi za prikaz elektronske lekcije, formi za unos podataka i interaktivnih vizualizacija. Backend deo aplikacije deployovan je na **Render** platformi i zadužen je za obradu zahteva i izvršavanje bioinformatičkih algoritama.
+Deploy aplikacije je podeljen na dve komponente. Frontend deo aplikacije deployovan je na **Vercel** platformi i služi za prikaz elektronske lekcije, formi za unos podataka i interaktivnih vizuelizacija. Backend deo aplikacije deployovan je na **Render** platformi i zadužen je za obradu zahteva i izvršavanje bioinformatičkih algoritama.
 
 Deployovana aplikacija dostupna je na sledećem linku:
 

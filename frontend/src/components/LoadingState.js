@@ -1,5 +1,5 @@
 export default function LoadingState({
-  title = "Vizualizacija se učitava",
+  title = "Vizuelizacija se učitava",
   message = "Molimo sačekajte nekoliko sekundi.",
 }) {
   return (

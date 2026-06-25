@@ -32,6 +32,86 @@ const references = [
     note: "Repozitorijum sadrži implementaciju frontend aplikacije, backend API-ja, prateće projektne fajlove i tekstualnu verziju master rada.",
     url: "https://github.com/dunjaci/master-rad",
   },
+  {
+    id: 5,
+    authors: "FastAPI",
+    title: "FastAPI dokumentacija",
+    details: "Zvanična dokumentacija, 2026.",
+    note: "Korišćeno za razvoj serverskog dela aplikacije i definisanje REST API krajnjih tačaka.",
+    url: "https://fastapi.tiangolo.com/",
+  },
+  {
+    id: 6,
+    authors: "Next.js",
+    title: "Next.js dokumentacija",
+    details: "Zvanična dokumentacija, 2026.",
+    note: "Korišćeno za razvoj klijentskog dela elektronske lekcije i organizaciju stranica u aplikaciji.",
+    url: "https://nextjs.org/docs",
+  },
+  {
+    id: 7,
+    authors: "React",
+    title: "React dokumentacija",
+    details: "Zvanična dokumentacija, 2026.",
+    note: "Korišćeno za implementaciju interaktivnih komponenti, stanja i prikaza algoritamskih koraka.",
+    url: "https://react.dev/",
+  },
+  {
+    id: 8,
+    authors: "Node.js",
+    title: "Node.js dokumentacija",
+    details: "Zvanična dokumentacija, 2026.",
+    note: "Korišćeno kao razvojno okruženje za pokretanje frontend alata i izgradnju aplikacije.",
+    url: "https://nodejs.org/en/docs",
+  },
+  {
+    id: 9,
+    authors: "Tailwind CSS",
+    title: "Tailwind CSS dokumentacija",
+    details: "Zvanična dokumentacija, 2026.",
+    note: "Korišćeno za stilizovanje korisničkog interfejsa elektronske lekcije.",
+    url: "https://tailwindcss.com/docs",
+  },
+  {
+    id: 10,
+    authors: "Render",
+    title: "Render dokumentacija",
+    details: "Zvanična dokumentacija, 2026.",
+    note: "Korišćeno za podešavanje i objavljivanje backend servisa.",
+    url: "https://render.com/docs",
+  },
+  {
+    id: 11,
+    authors: "Vercel",
+    title: "Vercel dokumentacija",
+    details: "Zvanična dokumentacija, 2026.",
+    note: "Korišćeno za objavljivanje frontend dela aplikacije.",
+    url: "https://vercel.com/docs",
+  },
+  {
+    id: 12,
+    authors: "Python",
+    title: "Python 3.12 dokumentacija",
+    details: "Zvanična dokumentacija, 2026.",
+    note: "Korišćeno za implementaciju bioinformatičkih algoritama u serverskom delu aplikacije.",
+    url: "https://docs.python.org/3.12/index.html",
+  },
+  {
+    id: 13,
+    authors: "Vinod Chugani",
+    title: "Hamming Distance Explained: The Theory and Applications",
+    details: "DataCamp, 2025.",
+    note: "Dodatni izvor za objašnjenje Hamingove distance i njene primene.",
+    url: "https://www.datacamp.com/tutorial/hamming-distance",
+  },
+  {
+    id: 14,
+    authors: "Aleksandar Veljković",
+    title: "Uvod u bioinformatiku: Materijali sa časova vežbi - Pronalaženje početka replikacije",
+    details: "Matematički fakultet, 2022.",
+    note: "Materijali sa vežbi korišćeni kao dodatna podrška za algoritme pronalaženja početka replikacije.",
+    url: "https://github.com/aleksandar-veljkovic/MATF-Uvod-u-bioinformatiku/tree/master/2022",
+  },
 ];
 
 function GitHubIcon() {
@@ -59,9 +139,9 @@ export default function Literatura() {
             Literatura
           </h1>
           <p className="mt-5 max-w-4xl text-lg leading-8 text-slate-600">
-            Ova stranica sadrži izvore korišćene za biološku motivaciju i algoritamske
-            postupke prikazane u elektronskoj lekciji o pronalaženju početnog regiona
-            replikacije.
+            Ova stranica sadrži izvore korišćene za biološku motivaciju, algoritamske
+            postupke i tehnologije primenjene u elektronskoj lekciji o pronalaženju
+            početnog regiona replikacije.
           </p>
         </header>
 

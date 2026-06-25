@@ -84,14 +84,14 @@ const approaches = [
     id: "naive",
     title: "Naivni pristup",
     badge: "računa svaki prozor",
-    complexity: "O((|Genom| - L + 1) * (4^k + L * k))",
+    complexity: "O(|Genom| · (4^k + L · k))",
     text: "Za svaki prozor dužine L iznova računa frekvencije svih k-mera i označava one koji se pojavljuju bar t puta.",
   },
   {
     id: "better",
     title: "Optimizacija kliznog prozora",
     badge: "ažurira dve vrednosti",
-    complexity: "O(4^k + |Genom| * k)",
+    complexity: "O(4^k · k + |Genom| · k)",
     text: "Prvi prozor se obradi jednom, a zatim se pri svakom pomeranju smanji frekvencija k-mera koji izlazi i poveća frekvencija k-mera koji ulazi.",
   },
 ];

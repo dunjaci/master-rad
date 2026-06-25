@@ -50,12 +50,12 @@ const sections = [
 ];
 
 const complexities = {
-  hamming: "O(k)",
-  matching: "O(|Tekst| · k)",
-  neighbors: "O(k · |Susedstvo|)",
-  frequent: "O(|Tekst| · |Susedstvo| + |Kandidati| · |Tekst| · k)",
-  frequentDict: "O(|Tekst| · |Susedstvo| + |Kandidati| · |Tekst| · k)",
-  reverse: "O(|Tekst| · |Susedstvo| + |Kandidati| · |Tekst| · k)",
+  hamming: "O(|Sekvenca|)",
+  matching: "O(|Genom| · |Obrazac|)",
+  neighbors: "Eksponencijalna u odnosu na d",
+  frequent: "Veoma visoka (zavisi od k i d)",
+  frequentDict: "Veoma visoka (memorijski efikasnija)",
+  reverse: "Veoma visoka (uključuje i obrnute komplemente)"
 };
 
 const codeSamples = {

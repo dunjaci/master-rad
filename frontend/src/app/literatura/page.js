@@ -3,7 +3,7 @@ const references = [
     id: 1,
     authors: "Bruce Alberts, Alexander Johnson, Julian Lewis i saradnici",
     title: "Molecular Biology of the Cell",
-    details: "4. izdanje, 2002.",
+    details: "7. izdanje, 2022.",
     note: "Osnovni biološki kontekst replikacije DNK, strukture genoma i ćelijskih procesa.",
     url: "https://www.ncbi.nlm.nih.gov/books/NBK26821/",
   },
@@ -111,6 +111,14 @@ const references = [
     details: "Matematički fakultet, 2022.",
     note: "Materijali sa vežbi korišćeni kao dodatna podrška za algoritme pronalaženja početka replikacije.",
     url: "https://github.com/aleksandar-veljkovic/MATF-Uvod-u-bioinformatiku/tree/master/2022",
+  },
+  {
+    id: 15,
+    authors: "Adam R. Leman, Eishi Noguchi",
+    title: "The replication fork: Understanding the eukaryotic replication machinery and the challenges to genome duplication",
+    details: "Genes, 4(1), 1-32, 2013.",
+    note: "Dodatni  izvor za objašnjenje asimetrije procesa replikacije.",
+    url: "https://doi.org/10.3390/genes4010001",
   },
 ];
 

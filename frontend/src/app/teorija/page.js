@@ -10,9 +10,9 @@ const sections = [
     image: "/images/dnk.png",
     imageAlt: "Ilustracija dvostruke spirale DNK",
     paragraphs: [
-      "DNK je molekul koji se sastoji od dva međusobno povezana lanca koji formiraju dvostruku spiralu. Svaki lanac je građen od nukleotida, pri čemu svaki nukleotid sadrži jednu od četiri azotne baze: adenin (A), timin (T), guanin (G) ili citozin (C). Baze se međusobno uparuju po principu komplementarnosti, tako da se adenin vezuje za timin, a guanin za citozin. Ovakva struktura omogućava stabilnost molekula, kao i precizno kopiranje genetičke informacije tokom procesa replikacije.",
+      "DNK je molekul koji se sastoji od dva međusobno povezana lanca koji formiraju dvostruku spiralu. Svaki lanac je građen od nukleotida, pri čemu svaki nukleotid sadrži jednu od četiri azotne baze: adenin (A), timin (T), guanin (G) ili citozin (C). Baze se međusobno uparuju po principu komplementarnosti, tako da se adenin vezuje za timin, a guanin za citozin. Ovakva struktura omogućava stabilnost molekula, kao i precizno kopiranje genetske informacije tokom procesa replikacije.",
       "DNK je u ćelijama organizovana u strukture koje se nazivaju hromozomi. Skup svih DNK molekula jednog organizma, odnosno kompletna informacija sadržana u njegovim hromozomima, naziva se genom. Različiti organizmi imaju različit broj hromozoma, kao i genom različite dužine, koji može varirati od nekoliko stotina hiljada do više miliona nukleotida.",
-      "Sa stanovišta bioinformatike, DNK sekvenca se može predstaviti kao konačna niska karaktera nad alfabetom {A, C, G, T}. Podniske dužine k, koje se nazivaju k-meri, predstavljaju osnovne jedinice koje se analiziraju u bioinformatici. Analiza učestalosti i raspodele k-mera u genomu omogućava otkrivanje obrazaca koji mogu ukazivati na funkcionalno značajne regione DNK.",
+      "Sa stanovišta bioinformatike, DNK sekvenca se može predstaviti kao konačna niska karaktera nad alfabetom {A, C, G, T}. Podniske te niske, dužine k, nazivaju se k-grami i predstavljaju osnovne jedinice koje se analiziraju u bioinformatici. Analiza učestalosti i raspodele k-grama u genomu omogućava otkrivanje obrazaca koji mogu ukazivati na funkcionalno značajne regione DNK. Ovakav model omogućava primenu algoritamskih metoda za analizu sekvenci, prepoznavanje obrazaca i rešavanje različitih problema u obradi genetskih podataka.",
     ],
   },
   {
@@ -31,16 +31,17 @@ const sections = [
     image: "/images/oric.png",
     imageAlt: "Ilustracija kružnog bakterijskog genoma sa obeleženim oriC regionom",
     paragraphs: [
-      "Početni region replikacije, označen kao oriC, predstavlja specifičan segment DNK u kojem započinje proces replikacije. Kod bakterija, genom je najčešće organizovan u obliku kružnog hromozoma, a oriC se nalazi na jednoj njegovoj lokaciji.",
-      "Ovaj region sadrži sekvence koje omogućavaju vezivanje proteina neophodnih za inicijaciju replikacije i time ima ključnu ulogu u pokretanju celokupnog procesa umnožavanja genetičkog materijala. Iako je oriC relativno kratak u poređenju sa dužinom celog genoma, koji može sadržati milione nukleotida, on u DNK sekvenci nije eksplicitno označen. Zbog toga, njegovo pronalaženje predstavlja složen i netrivijalan zadatak.",
+      "Početni region replikacije, označen kao oriC, predstavlja specifičan segment DNK u kojem započinje proces replikacije. Kod bakterija, genom je najčešće organizovan u obliku kružnog hromozoma i sadrži samo jedan takav region iz kojeg se replikacija širi u oba smera.",
+      "Ovaj region sadrži sekvence koje omogućavaju vezivanje proteina neophodnih za početak replikacije i time ima ključnu ulogu u pokretanju celokupnog procesa umnožavanja genetskog materijala. Iako je oriC relativno kratak u poređenju sa dužinom celog genoma, koji može sadržati milione nukleotida, on u DNK sekvenci nije eksplicitno označen. Zbog toga, njegovo pronalaženje predstavlja složen i netrivijalan zadatak.",
     ],
   },
   {
     id: "dnaa",
-    title: "DnaA proteini i DnaA boksovi",
+    title: "DNK polimeraza, DnkA proteini i boksovi",
     paragraphs: [
-      "Inicijacija replikacije DNK započinje vezivanjem specifičnih proteina za određene delove genoma. Jedan od najvažnijih proteina u ovom procesu je DnaA, koji ima sposobnost da prepozna i veže se za kratke sekvence unutar početnog regiona replikacije. Ove kratke sekvence poznate su kao DnaA boksovi i karakteriše ih to što se pojavljuju više puta unutar oriC regiona.",
-      "Zbog svoje ponavljajuće prirode, DnaA boksovi se mogu posmatrati kao karakteristični obrasci u DNK sekvenci, što omogućava njihovo pronalaženje primenom algoritamskih metoda. Upravo ova osobina predstavlja osnovu za razvoj pristupa koji se koriste u bioinformatici za identifikaciju početnog regiona replikacije.",
+      "Početak replikacije DNK započinje vezivanjem specifičnih proteina za određene delove genoma. Jedan od najvažnijih proteina u ovom procesu je DnkA, koji ima sposobnost da prepozna i veže se za kratke sekvence unutar početnog regiona replikacije. Ove kratke sekvence poznate su kao DnkA boksovi i karakteriše ih to što se pojavljuju više puta unutar oriC regiona. Njihova učestalost na ograničenom regionu unutar DNK omogućava proteinima da identifikuju mesto na kojem treba da započne replikacija.",
+      "Nakon vezivanja DnkA proteina dolazi do lokalnog razdvajanja DNK lanca, čime se omogućava delovanje DNK polimeraze, enzima koji funkcioniše kao molekularna mašina za kopiranje genetskog materijala i vrši sintezu novih DNK lanaca.",
+      "Upravo zbog svoje ponavljajuće prirode, DnkA boksovi se mogu posmatrati kao karakteristični obrasci u DNK sekvenci, što omogućava njihovo pronalaženje primenom algoritamskih metoda.",
     ],
   },
   {
@@ -50,8 +51,10 @@ const sections = [
     imageAlt: "Ilustracija komplementarnih DNK lanaca suprotne orijentacije",
     paragraphs: [
       "Zbog komplementarne prirode DNK molekula, svaki lanac DNK povezan je sa drugim lancem prema pravilima uparivanja baza, pri čemu se adenin (A) uparuje sa timinom (T), dok se guanin (G) uparuje sa citozinom (C). Pored toga, dva lanca DNK molekula imaju suprotne smerove prostiranja, odnosno jedan je orijentisan u smeru 5' → 3', a drugi u smeru 3' → 5'.",
-      "Na osnovu ovih osobina definiše se pojam obrnutog komplementa. Komplement jedne DNK sekvence dobija se zamenom svake baze njenom komplementarnom bazom, nakon čega se dobijena sekvenca obrće zbog suprotne orijentacije DNK lanaca. Na primer, za sekvencu AGTC, komplementarna sekvenca je TCAG, dok je njen obrnuti komplement GACT.",
-      "S obzirom na dvostruku strukturu DNK, biološki značajne sekvence mogu se pojaviti na oba lanca molekula. Zbog toga je pri analizi genoma neophodno razmatrati i DNK sekvencu i njen obrnuti komplement.",
+      "Na slici su prikazana dva komplementarna DNK lanca i način uparivanja nukleotida. Može se uočiti da svakoj bazi jednog lanca odgovara tačno određena komplementarna baza na drugom lancu.",
+      "Na osnovu ovih osobina definiše se pojam obrnutog komplementa (reverse complement). Komplement jedne DNK sekvence dobija se zamenom svake baze njenom komplementarnom bazom. Zbog suprotne orijentacije DNK lanaca, komplementarna sekvenca čita se u smeru 5' → 3', čime se dobija obrnuti komplement.",
+      "Na primer, za sekvencu AGTC, komplementarna sekvenca je TCAG, dok je njen obrnuti komplement GACT.",
+      "S obzirom na dvostruku strukturu DNK, biološki značajne sekvence mogu se pojaviti na oba lanca molekula. Zbog toga je pri analizi genoma neophodno razmatrati i DNK sekvencu i njen obrnuti komplement. U kontekstu algoritama za pronalaženje početnog regiona replikacije, uzimanje u obzir obrnutih komplementarnih sekvenci ima poseban značaj, jer se karakteristični obrasci mogu pojaviti u oba smera duž DNK molekula.",
     ],
   },
 ];
@@ -79,7 +82,7 @@ export default function Teorija() {
           </h1>
           <div className="mt-6 space-y-5 text-lg leading-8 text-slate-600">
             <p>
-              Dezoksiribonukleinska kiselina (DNK) je osnovni nosilac genetičke
+              Dezoksiribonukleinska kiselina (DNK) je osnovni nosilac genetske
               informacije kod živih organizama. Jedan od značajnih izazova u
               bioinformatici predstavlja identifikacija funkcionalno relevantnih
               regiona unutar DNK sekvenci, pri čemu se ova analiza često zasniva
@@ -88,7 +91,7 @@ export default function Teorija() {
             <p>
               Posebno interesantan problem predstavlja određivanje početnog
               regiona replikacije (oriC), koji ima ključnu ulogu u procesu
-              umnožavanja genetičkog materijala. U okviru velikih genoma, koji
+              umnožavanja genetskog materijala. U okviru velikih genoma, koji
               mogu sadržati milione nukleotida, ovaj region je relativno kratak
               i nije eksplicitno označen. Stoga se njegovo identifikovanje
               zasniva na analizi obrazaca u DNK sekvenci i prepoznavanju

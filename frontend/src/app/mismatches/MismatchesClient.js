@@ -13,7 +13,7 @@ const API_BASE = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:8000"
 const sections = [
   {
     id: "hamming",
-    title: "Hamingova distanca",
+    title: "Hamingovo rastojanje",
     badge: "mera razlike",
     text: "Poredi dve sekvence iste dužine i broji pozicije na kojima se simboli razlikuju.",
   },
@@ -21,7 +21,7 @@ const sections = [
     id: "matching",
     title: "Približno poklapanje",
     badge: "klizni prozor",
-    text: "Traži sve pozicije na kojima je Hamingova distanca od obrasca najviše d.",
+    text: "Traži sve pozicije na kojima je Hamingovo rastojanje od obrasca najviše d.",
   },
   {
     id: "neighbors",
@@ -565,7 +565,7 @@ export default function MismatchesClient() {
               nukleotide, dok motiv i dalje zadržava istu funkciju.
             </p>
             <p>
-              Zbog toga se uvode Hamingova distanca, približno poklapanje,
+              Zbog toga se uvode Hamingovo rastojanje, približno poklapanje,
               d-susedstvo i česte reči sa propustima. Ovi algoritmi omogućavaju da se
               pronađu obrasci koji su dovoljno slični, čak i kada nisu identični.
             </p>
@@ -821,7 +821,7 @@ export default function MismatchesClient() {
                   <p className="font-semibold">Kako se računa?</p>
                   <p className="mt-2 leading-7 text-slate-600">
                     Algoritam poredi simbole na istim pozicijama. Svaka kolona u kojoj se
-                    baze razlikuju povećava distancu za 1. Ovde je Hamingova distanca{" "}
+                    baze razlikuju povećava distancu za 1. Ovde je Hamingovo rastojanje{" "}
                     <span className="font-mono font-bold">{hammingResult}</span>.
                   </p>
                 </div>
@@ -868,7 +868,7 @@ export default function MismatchesClient() {
                         <p className="mt-1 text-2xl font-bold">{activeWindow.index}</p>
                       </div>
                       <div className="rounded-lg bg-blue-50 p-3">
-                        <p className="text-sm text-blue-700">Hamingova distanca</p>
+                        <p className="text-sm text-blue-700">Hamingovo rastojanje</p>
                         <p className="mt-1 text-2xl font-bold">{activeWindow.distance}</p>
                       </div>
                       <div className="rounded-lg bg-emerald-50 p-3">

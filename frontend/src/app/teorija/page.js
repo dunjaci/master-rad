@@ -21,8 +21,8 @@ const sections = [
     image: "/images/replikacija.png",
     imageAlt: "Ilustracija razdvajanja DNK lanaca tokom replikacije",
     paragraphs: [
-      "Replikacija DNK predstavlja proces umnožavanja genetskog materijala koji se odvija pre deobe ćelije. Tokom ovog procesa, dva lanca DNK se razdvajaju, a zatim se za svaki od njih sintetiše novi komplementarni lanac. Kao rezultat replikacije nastaju dve identične kopije DNK molekula, koje se raspodeljuju u ćerke ćelije.",
-      "Ovaj proces je visoko kontrolisan i započinje na određenim lokacijama u genomu. Replikacija se zatim odvija u oba smera duž DNK lanca, pri čemu različiti enzimi i proteini učestvuju u razdvajanju lanaca i sintezi novih nukleotida.",
+      "Replikacija DNK predstavlja proces umnožavanja genetskog materijala koji se odvija pre deobe ćelije. Tokom ovog procesa, dva lanca DNK se razdvajaju, a zatim se za svaki od njih sintetiše novi komplementarni lanac. Kao rezultat replikacije nastaju dve identične kopije originalnog DNK molekula, koje se raspodeljuju u ćerke ćelije.",
+      "Ovaj proces je strogo regulisan, jer njegovo pokretanje i odvijanje kontrolišu različiti enzimi i drugi proteini kako bi replikacija započela na odgovarajućim lokacijama u genomu. Nakon toga, replikacija se odvija u oba smera duž DNK molekula, pri čemu dolazi do razdvajanja roditeljskih lanaca i sinteze novih komplementarnih nukleotidnih lanaca.",
     ],
   },
   {
@@ -31,8 +31,8 @@ const sections = [
     image: "/images/oric.png",
     imageAlt: "Ilustracija kružnog bakterijskog genoma sa obeleženim oriC regionom",
     paragraphs: [
-      "Početni region replikacije, označen kao oriC, predstavlja specifičan segment DNK u kojem započinje proces replikacije. Kod bakterija, genom je najčešće organizovan u obliku kružnog hromozoma i sadrži samo jedan takav region iz kojeg se replikacija širi u oba smera.",
-      "Ovaj region sadrži sekvence koje omogućavaju vezivanje proteina neophodnih za početak replikacije i time ima ključnu ulogu u pokretanju celokupnog procesa umnožavanja genetskog materijala. Iako je oriC relativno kratak u poređenju sa dužinom celog genoma, koji može sadržati milione nukleotida, on u DNK sekvenci nije eksplicitno označen. Zbog toga, njegovo pronalaženje predstavlja složen i netrivijalan zadatak.",
+      "Početni region replikacije, označen kao oriC, predstavlja specifičan segment DNK u kojem započinje proces replikacije. Kod bakterija, genom je najčešće organizovan u obliku kružnog hromozoma i sadrži samo jedan takav region iz kojeg se replikacija odvija u oba smera.",
+      "Ovaj region sadrži sekvence koje omogućavaju vezivanje proteina neophodnih za početak replikacije i time ima ključnu ulogu u pokretanju celokupnog procesa umnožavanja genetskog materijala. Iako je oriC relativno kratak u poređenju sa dužinom celog genoma, koji može sadržati milione nukleotida, on u DNK sekvenci nije eksplicitno označen, odnosno ne postoji jedinstvena sekvenca ili oznaka koja direktno ukazuje na njegovu lokaciju. Zbog toga, njegovo pronalaženje predstavlja složen i netrivijalan zadatak.",
     ],
   },
   {
@@ -40,21 +40,21 @@ const sections = [
     title: "DNK polimeraza, DnkA proteini i boksovi",
     paragraphs: [
       "Početak replikacije DNK započinje vezivanjem specifičnih proteina za određene delove genoma. Jedan od najvažnijih proteina u ovom procesu je DnkA, koji ima sposobnost da prepozna i veže se za kratke sekvence unutar početnog regiona replikacije. Ove kratke sekvence poznate su kao DnkA boksovi i karakteriše ih to što se pojavljuju više puta unutar oriC regiona. Njihova učestalost na ograničenom regionu unutar DNK omogućava proteinima da identifikuju mesto na kojem treba da započne replikacija.",
-      "Nakon vezivanja DnkA proteina dolazi do lokalnog razdvajanja DNK lanca, čime se omogućava delovanje DNK polimeraze, enzima koji funkcioniše kao molekularna mašina za kopiranje genetskog materijala i vrši sintezu novih DNK lanaca.",
+      "Nakon vezivanja DnkA proteina dolazi do lokalnog razdvajanja DNK lanca, čime se omogućava delovanje DNK polimeraze, enzima koji funkcioniše kao molekularna mašina za kopiranje genetskog materijala i vrši sintezu novih, komplementarnih DNK lanaca.",
       "Upravo zbog svoje ponavljajuće prirode, DnkA boksovi se mogu posmatrati kao karakteristični obrasci u DNK sekvenci, što omogućava njihovo pronalaženje primenom algoritamskih metoda.",
     ],
   },
   {
     id: "reverse",
-    title: "Obrnuti komplement (Reverse Complement)",
+    title: "Obrnuti komplement",
     image: "/images/reverse.png",
     imageAlt: "Ilustracija komplementarnih DNK lanaca suprotne orijentacije",
     paragraphs: [
-      "Zbog komplementarne prirode DNK molekula, svaki lanac DNK povezan je sa drugim lancem prema pravilima uparivanja baza, pri čemu se adenin (A) uparuje sa timinom (T), dok se guanin (G) uparuje sa citozinom (C). Pored toga, dva lanca DNK molekula imaju suprotne smerove prostiranja, odnosno jedan je orijentisan u smeru 5' → 3', a drugi u smeru 3' → 5'.",
+      "Zbog komplementarne prirode DNK molekula, svaki lanac DNK povezan je sa drugim lancem prema pravilima uparivanja baza, pri čemu se adenin (A) uparuje sa timinom (T), dok se guanin (G) uparuje sa citozinom (C). Pored toga, dva lanca DNK molekula imaju suprotnu orijentaciju (antiparalelni su), odnosno jedan je orijentisan u smeru 5' → 3', a drugi u smeru 3' → 5'. Oznake 5' i 3' predstavljaju krajeve DNK lanca i određuju njegovu orijentaciju. Po konvenciji, DNK sekvence se zapisuju i čitaju u smeru 5' → 3', što omogućava jednoznačno predstavljanje i poređenje sekvenci.",
       "Na slici su prikazana dva komplementarna DNK lanca i način uparivanja nukleotida. Može se uočiti da svakoj bazi jednog lanca odgovara tačno određena komplementarna baza na drugom lancu.",
       "Na osnovu ovih osobina definiše se pojam obrnutog komplementa (reverse complement). Komplement jedne DNK sekvence dobija se zamenom svake baze njenom komplementarnom bazom. Zbog suprotne orijentacije DNK lanaca, komplementarna sekvenca čita se u smeru 5' → 3', čime se dobija obrnuti komplement.",
       "Na primer, za sekvencu AGTC, komplementarna sekvenca je TCAG, dok je njen obrnuti komplement GACT.",
-      "S obzirom na dvostruku strukturu DNK, biološki značajne sekvence mogu se pojaviti na oba lanca molekula. Zbog toga je pri analizi genoma neophodno razmatrati i DNK sekvencu i njen obrnuti komplement. U kontekstu algoritama za pronalaženje početnog regiona replikacije, uzimanje u obzir obrnutih komplementarnih sekvenci ima poseban značaj, jer se karakteristični obrasci mogu pojaviti u oba smera duž DNK molekula.",
+      "S obzirom na dvostruku strukturu DNK molekula, biološki značajne sekvence mogu se pojaviti na bilo kom od njegova dva lanca. Zbog toga je pri analizi genoma neophodno uzeti u obzir oba lanca DNK molekula. Kako se DNK sekvence po konvenciji zapisuju u smeru 5' → 3', drugi lanac predstavlja se njegovim obrnutim komplementom. Ovo je od posebnog značaja u algoritmima za pronalaženje početnog regiona replikacije, jer omogućava prepoznavanje karakterističnih obrazaca bez obzira na lanac na kojem se nalaze.",
     ],
   },
 ];

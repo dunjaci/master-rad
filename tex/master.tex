@@ -51,11 +51,11 @@ Ovaj rad predstavlja elektronsku lekciju posvećenu algoritmima za identifikacij
 % ==============================================================================
 \naslovna
 \komisija
-\posveta{Posveta}
+\posveta{Mom tati, koji je uvek verovao u mene}
 \apstrakt
 \tableofcontents*
 
-% ==============================================================================
+%==============================================================================
 % Glavni deo teze
 \mainmatter
 % ==============================================================================
@@ -65,7 +65,7 @@ Ovaj rad predstavlja elektronsku lekciju posvećenu algoritmima za identifikacij
 % ------------------------------------------------------------------------------
 Dezoksiribonukleinska kiselina (DNK) je osnovni nosilac genetske informacije kod živih organizama. Jedan od značajnih izazova u bioinformatici predstavlja identifikacija funkcionalno relevantnih regiona unutar DNK sekvenci, pri čemu se ova analiza često zasniva na primeni algoritamskih metoda.
 
-Posebno interesantan problem predstavlja određivanje početnog regiona replikacije (\textit{oriC}), koji ima ključnu ulogu u procesu umnožavanja genetskog materijala. U okviru velikih genoma, koji mogu sadržati milione nukleotida, ovaj region je relativno kratak i nije eksplicitno označen. Stoga se njegovo identifikovanje zasniva na analizi obrazaca u DNK sekvenci i prepoznavanju karakterističnih signala koji ukazuju na početak replikacije.
+Posebno interesantan problem predstavlja određivanje početnog regiona replikacije (\textit{oriC}, eng. \textit{origin of replication}), koji ima ključnu ulogu u procesu umnožavanja genetskog materijala. U okviru velikih genoma, koji mogu sadržati milione nukleotida, ovaj region je relativno kratak i nije eksplicitno označen\footnote{U DNK sekvenci ne postoje unapred definisane oznake koje bi direktno ukazivale na početak, kraj ili lokaciju \textit{oriC} regiona. Kada bi region bio eksplicitno označen, njegova lokacija bila bi jasno definisana i mogla bi se neposredno očitati iz podataka, bez potrebe za dodatnom analizom.}. Stoga se njegovo identifikovanje zasniva na analizi obrazaca u DNK sekvenci i prepoznavanju karakterističnih signala koji ukazuju na početak replikacije.
 
 Jedan od ključnih uvida jeste da se u ovim regionima često pojavljuju ponavljajuće sekvence, kao i specifične statističke nepravilnosti u raspodeli nukleotida. Ove osobine omogućavaju primenu algoritamskih metoda za identifikaciju kandidata za \textit{oriC} region.
 
@@ -97,7 +97,7 @@ Sa stanovišta bioinformatike, DNK sekvenca se može predstaviti kao konačna ni
 
 
 \section{Replikacija DNK}
-Replikacija DNK predstavlja proces umnožavanja genetskog materijala koji se odvija pre deobe ćelije. Tokom ovog procesa, dva lanca DNK se razdvajaju, a zatim se za svaki od njih sintetiše novi komplementarni lanac. Kao rezultat replikacije nastaju dve identične kopije DNK molekula, koje se raspodeljuju u ćerke ćelije. Slika \ref{fig:replication} ilustruje opisano.
+Replikacija DNK predstavlja proces umnožavanja genetskog materijala koji se odvija pre deobe ćelije. Tokom ovog procesa, dva lanca DNK se razdvajaju, a zatim se za svaki od njih sintetiše novi komplementarni lanac. Kao rezultat replikacije nastaju dve identične kopije originalnog DNK molekula, koje se raspodeljuju u ćerke ćelije. Slika \ref{fig:replication} ilustruje opisano.
 
 \begin{figure}[h]
 \centering
@@ -105,10 +105,10 @@ Replikacija DNK predstavlja proces umnožavanja genetskog materijala koji se odv
 \caption{Replikacija DNK\cite{online_book}}
 \label{fig:replication}
 \end{figure}
-Ovaj proces je visoko kontrolisan i započinje na određenim lokacijama u genomu. Replikacija se zatim odvija u oba smera duž DNK lanca, pri čemu različiti enzimi i proteini učestvuju u razdvajanju lanaca i sintezi novih nukleotida.
+Ovaj proces je strogo regulisan, jer njegovo pokretanje i odvijanje kontrolišu različiti enzimi i drugi proteini kako bi replikacija započela na odgovarajućim lokacijama u genomu. Nakon toga, replikacija se odvija u oba smera duž DNK molekula, pri čemu dolazi do razdvajanja roditeljskih lanaca i sinteze novih komplementarnih nukleotidnih lanaca.
 
 \section{Početni region replikacije (\textit{oriC})}
-Početni region replikacije, označen kao \textit{oriC}, predstavlja specifičan segment DNK u kojem započinje proces replikacije. Kod bakterija, genom je najčešće organizovan u obliku kružnog hromozoma i sadrži samo jedan takav region iz kojeg se replikacija širi u oba smera, kao što je prikazano na Slici \ref{fig:oric}.
+Početni region replikacije, označen kao \textit{oriC}, predstavlja specifičan segment DNK u kojem započinje proces replikacije. Kod bakterija, genom je najčešće organizovan u obliku kružnog hromozoma i sadrži samo jedan takav region iz kojeg se replikacija odvija u oba smera, kao što je prikazano na Slici \ref{fig:oric}.
 
 \begin{figure}[h]
 \centering
@@ -116,7 +116,7 @@ Početni region replikacije, označen kao \textit{oriC}, predstavlja specifičan
 \caption{Početni region replikacije \cite{online_lecture}}
 \label{fig:oric}
 \end{figure}
-Ovaj region sadrži sekvence koje omogućavaju vezivanje proteina neophodnih za početak replikacije i time ima ključnu ulogu u pokretanju celokupnog procesa umnožavanja genetskog materijala. Iako je \textit{oriC} relativno kratak u poređenju sa dužinom celog genoma, koji može sadržati milione nukleotida, on u DNK sekvenci nije eksplicitno označen. Zbog toga, njegovo pronalaženje predstavlja složen i netrivijalan zadatak.
+Ovaj region sadrži sekvence koje omogućavaju vezivanje proteina neophodnih za početak replikacije i time ima ključnu ulogu u pokretanju celokupnog procesa umnožavanja genetskog materijala. Iako je \textit{oriC} relativno kratak u poređenju sa dužinom celog genoma, koji može sadržati milione nukleotida, on u DNK sekvenci nije eksplicitno označen, odnosno ne postoji jedinstvena sekvenca ili oznaka koja direktno ukazuje na njegovu lokaciju. Zbog toga, njegovo pronalaženje predstavlja složen i netrivijalan zadatak.
 
 
 
@@ -124,19 +124,19 @@ Ovaj region sadrži sekvence koje omogućavaju vezivanje proteina neophodnih za 
 
 \section{\textit{DNK} polimeraza, \textit{DnkA} proteini i boksovi}
 Početak replikacije DNK započinje vezivanjem specifičnih proteina za određene delove genoma. Jedan od najvažnijih proteina u ovom procesu je \textit{DnkA}, koji ima sposobnost da prepozna i veže se za kratke sekvence unutar početnog regiona replikacije. Ove kratke sekvence poznate su kao \textit{DnkA} boksovi i karakteriše ih to što se pojavljuju više puta unutar \textit{oriC} regiona. Njihova učestalost na ograničenom regionu unutar DNK omogućava proteinima da identifikuju mesto na kojem treba da započne replikacija.
-Nakon vezivanja \textit{DnkA} proteina dolazi do lokalnog razdvajanja DNK lanca, čime se omogućava delovanje \textit{DNK polimeraze}, enzima koji funkcioniše kao molekularna mašina za kopiranje genetskog materijala i vrši sintezu novih DNK lanaca.
+Nakon vezivanja \textit{DnkA} proteina dolazi do lokalnog razdvajanja DNK lanca, čime se omogućava delovanje \textit{DNK polimeraze}, enzima koji funkcioniše kao molekularna mašina za kopiranje genetskog materijala i vrši sintezu novih, komplementarnih DNK lanaca.
 Upravo zbog svoje ponavljajuće prirode, \textit{DnkA} boksovi se mogu posmatrati kao karakteristični obrasci u DNK sekvenci, što omogućava njihovo pronalaženje primenom algoritamskih metoda. 
 
 
 
 
-\section{Obrnuti komplement (\textit{Reverse Complement})}
+\section{Obrnuti komplement}
 
-Zbog komplementarne prirode DNK molekula, svaki lanac DNK povezan je sa drugim lancem prema pravilima uparivanja baza, pri čemu se adenin (A) uparuje sa timinom (T), dok se guanin (G) uparuje sa citozinom (C). Pored toga, dva lanca DNK molekula imaju suprotne smerove prostiranja, odnosno jedan je orijentisan u smeru $5' \rightarrow 3'$, a drugi u smeru $3' \rightarrow 5'$.
+Zbog komplementarne prirode DNK molekula, svaki lanac DNK povezan je sa drugim lancem prema pravilima uparivanja baza, pri čemu se adenin (A) uparuje sa timinom (T), dok se guanin (G) uparuje sa citozinom (C). Pored toga, dva lanca DNK molekula imaju suprotnu orijentaciju (antiparalelni su), odnosno jedan je orijentisan u smeru $5' \rightarrow 3'$, a drugi u smeru $3' \rightarrow 5'$. Oznake $5'$ i $3'$ predstavljaju krajeve DNK lanca i određuju njegovu orijentaciju. Po konvenciji, DNK sekvence se zapisuju i čitaju u smeru $5' \rightarrow 3'$, što omogućava jednoznačno predstavljanje i poređenje sekvenci.
 
 Na slici \ref{fig:reverse} prikazana su dva komplementarna DNK lanca i način uparivanja nukleotida. Može se uočiti da svakoj bazi jednog lanca odgovara tačno određena komplementarna baza na drugom lancu.
 
-Na osnovu ovih osobina definiše se pojam obrnutog komplementa (\textit{reverse complement}). Komplement jedne DNK sekvence dobija se zamenom svake baze njenom komplementarnom bazom. Zbog suprotne orijentacije DNK lanaca, komplementarna sekvenca čita se u smeru $5' \rightarrow 3'$, čime se dobija obrnuti komplement.
+Na osnovu ovih osobina definiše se pojam obrnutog komplementa (eng. \textit{reverse complement}). Komplement jedne DNK sekvence dobija se zamenom svake baze njenom komplementarnom bazom. Zbog suprotne orijentacije DNK lanaca, komplementarna sekvenca čita se u smeru $5' \rightarrow 3'$, čime se dobija obrnuti komplement.
 
 \begin{figure}[h]
 \centering
@@ -147,7 +147,10 @@ Na osnovu ovih osobina definiše se pojam obrnutog komplementa (\textit{reverse 
 
 Na primer, za sekvencu \code{AGTC}, komplementarna sekvenca je \code{TCAG}, dok je njen obrnuti komplement \code{GACT}.
 
-S obzirom na dvostruku strukturu DNK, biološki značajne sekvence mogu se pojaviti na oba lanca molekula. Zbog toga je pri analizi genoma neophodno razmatrati i DNK sekvencu i njen obrnuti komplement. U kontekstu algoritama za pronalaženje početnog regiona replikacije, uzimanje u obzir obrnutih komplementarnih sekvenci ima poseban značaj, jer se karakteristični obrasci mogu pojaviti u oba smera duž DNK molekula.
+
+
+S obzirom na dvostruku strukturu DNK molekula, biološki značajne sekvence mogu se pojaviti na bilo kom od njegova dva lanca. Zbog toga je pri analizi genoma neophodno uzeti u obzir oba lanca DNK molekula. Kako se DNK sekvence po konvenciji zapisuju u smeru $5' \rightarrow 3'$, drugi lanac predstavlja se njegovim obrnutim komplementom. Ovo je od posebnog značaja u algoritmima za pronalaženje početnog regiona replikacije, jer omogućava prepoznavanje karakterističnih obrazaca bez obzira na lanac na kojem se nalaze.
+
 
 
 % ------------------------------------------------------------------------------
@@ -156,13 +159,13 @@ S obzirom na dvostruku strukturu DNK, biološki značajne sekvence mogu se pojav
 
 Biološke osobine početnog regiona replikacije, kao što su prisustvo ponavljajućih sekvenci i statističke nepravilnosti u raspodeli nukleotida, omogućavaju primenu algoritamskih metoda za njegovo pronalaženje. Analizom učestalosti podniski, njihove lokalne raspodele i statističkih karakteristika genoma moguće je identifikovati potencijalne kandidate za \textit{oriC} region. U ovom poglavlju biće predstavljeni algoritamski pristupi koji koriste ove osobine za analizu DNK sekvenci.
 
-\section{Problem čestih reči (\textit{Frequent Words Problem})}
+\section{Problem čestih reči}
 
 Kako određeni obrasci u DNK sekvenci mogu ukazivati na funkcionalno važne regione, prirodan pristup jeste analiza učestalosti pojavljivanja podniski. Sekvence koje se pojavljuju značajno češće od ostalih mogu imati posebnu biološku ulogu, pa se problem svodi na pronalaženje najčešće zastupljenih podniski određene dužine.
 
 Polazeći od pretpostavke da se DNK sekvenca može posmatrati kao niska karaktera nad alfabetom $\{A, C, G, T\}$, moguće je primeniti metode analize teksta u cilju identifikacije karakterističnih obrazaca.
 
-Podniske dužine $k$ jedne biološke sekvence (DNK, njenog segmenta ili proteina) nazivaju se $k$-grami ili $k$-meri i predstavljaju osnovne jedinice analize bioloških sekvenci. Analizom frekvencije njihovog pojavljivanja moguće je identifikovati obrasce koji mogu ukazivati na prisustvo funkcionalno značajnih regiona, kao što je \textit{oriC}. 
+Podniske dužine $k$ jedne biološke sekvence (DNK, njenog segmenta ili proteina) nazivaju se $k$-grami (eng.\textit{ $k$-mers}) i predstavljaju osnovne jedinice analize bioloških sekvenci. Analizom njihovog broja pojavljivanja moguće je identifikovati obrasce koji mogu ukazivati na prisustvo funkcionalno značajnih regiona, kao što je \textit{oriC}. 
 
 Neka je data niska $Text$ i podniska $Pattern$ dužine $k$.  Definišemo funkciju:
 \[
@@ -172,7 +175,7 @@ kao broj pojavljivanja podniske $Pattern$ u niski $Text$, pri čemu se uzimaju u
 
 \subsubsection{Algoritam za prebrojavanje pojavljivanja}
 
-Za izračunavanje funkcije $\textit{PatternCount}(Text, Pattern)$ koristi se pristup zasnovan na kliznom prozoru (\textit{sliding window}). Ideja je da se prolaskom kroz tekst proveri svaka podniska dužine $k$.
+Za izračunavanje funkcije $\textit{PatternCount}(Text, Pattern)$ koristi se pristup zasnovan na kliznom prozoru (eng. \textit{sliding window}). Ideja je da se prolaskom kroz tekst proveri svaka podniska dužine $k$.
 
 Algoritam \ref{alg:pattern_count} prikazuje pseudokod za izračunavanje ove funkcije.
 
@@ -187,7 +190,7 @@ Algoritam \ref{alg:pattern_count} prikazuje pseudokod za izračunavanje ove funk
     $count \gets 0$\;
 
     \For{$i \gets 0$ \KwTo $|Text| - |Pattern|$}{
-        \If{$Text[i..i+|Pattern|-1] = Pattern$}{
+        \If{$Text[i\,..\,(i+|Pattern|-1)] = Pattern$}{
             $count \gets count + 1$\;
         }
     }
@@ -198,7 +201,7 @@ Algoritam \ref{alg:pattern_count} prikazuje pseudokod za izračunavanje ove funk
 
 \subsection{Algoritam}
 
-Problem čestih reči može se formalno definisati na sledeći način:
+Problem čestih reči (eng. \textit{Frequent Words Problem}) može se formalno definisati na sledeći način:
 
 \begin{itemize}
     \item Ulaz: niska karaktera $Text$ i ceo broj $k$
@@ -215,11 +218,11 @@ Osnovna ideja algoritma za pronalazak čestih reči zasniva se na prolasku kroz 
 
 Naivni pristup rešavanju ovog problema može se opisati kroz sledeće korake:
 \begin{itemize}
-    \item Proći kroz sve moguće pozicije u niski $Text$
-    \item Za svaku poziciju izdvojiti podnisku dužine $k$
-    \item Za svaku podnisku izračunati $\textit{PatternCount}(Text, Pattern)$ primenom algoritma \ref{alg:pattern_count}
-    \item Odrediti maksimalan broj pojavljivanja
-    \item Izdvojiti sve podniske koje imaju tu frekvenciju
+    \item Proći kroz sve moguće pozicije u niski $Text$.
+    \item Za svaku moguću početnu poziciju u niski izdvojiti podnisku dužine $k$ koja počinje na toj poziciji.
+    \item Za svaku podnisku izračunati $\textit{PatternCount}(Text, Pattern)$ primenom algoritma \ref{alg:pattern_count}.
+    \item Odrediti maksimalan broj pojavljivanja.
+    \item Izdvojiti sve podniske koje imaju tu frekvenciju.
 \end{itemize}
 
 Algoritam \ref{alg:frequent_words} prikazuje pseudokod algoritma za pronalaženje najčešćih reči.
@@ -233,6 +236,7 @@ Algoritam \ref{alg:frequent_words} prikazuje pseudokod algoritma za pronalaženj
 \SetKwProg{Fn}{Funkcija}{}{}
 \Fn{\FRec{Text, k}}{
     $najcesciKgrami \gets$ prazan skup\;
+    $count \gets$ niz dužine $|Text|-k+1$ inicijalizovan nulama\;
 
     \For{$i \gets 0$ \KwTo $|Text| - k$}{
         $pattern \gets Text[i..i+k-1]$\;
@@ -262,7 +266,7 @@ Posmatrajmo DNK sekvencu:
 \texttt{ACTGACTCCCACCCC}
 \]
 
-Za $k = 3$ izdvajaju se svi 3-grami i računa se broj njihovih pojavljivanja u sekvenci \cite{online_book}.
+Za $k = 3$ izdvajaju se svi 3-grami i računa se broj njihovih pojavljivanja u sekvenci.
 
 Neki od izdvojenih 3-grama su:
 \[
@@ -332,14 +336,14 @@ Za velike vrednosti ulaza, ova složenost se može pojednostaviti na:
 O(|Text|^2 \cdot k)
 \]
 
-Drugim rečima, algoritam ima kvadratnu složenost u odnosu na dužinu sekvence, uz dodatni faktor $k$ zbog poređenja podniski.
+Drugim rečima, algoritam ima kvadratnu složenost u odnosu na dužinu sekvence, uz dodatni faktor $k$ koji odgovara dužini analiziranih podniski.
 
-Ovakva složenost brzo postaje nepraktična za duge DNK sekvence, koje mogu sadržati milione nukleotida. Zbog toga je neophodno razmotriti optimizovane pristupe, poput korišćenja niza frekvencija ili sortiranja, koji omogućavaju značajno efikasnije rešavanje ovog problema.
+Ovakva složenost brzo postaje nepraktična za duge DNK sekvence, koje mogu sadržati milione nukleotida. Zbog toga je neophodno razmotriti optimizovane pristupe, poput korišćenja niza frekvencija ili sortiranja, koji omogućavaju značajno efikasnije rešavanje ovog problema. Ovi pristupi biće detaljno analizirani u sekcijama \ref{sec:niz_frekvencija} i  \ref{sec:sortiranje}.
 
 
 \subsection{Optimizovani pristup korišćenjem niza frekvencija}
-
-Naivni algoritam za rešavanje problema čestih reči ima visoku vremensku složenost jer za svaki $k$-gram ponovo prolazi kroz celu sekvencu. Da bi se ovaj problem rešio efikasnije, uvodi se optimizovani pristup zasnovan na korišćenju niza frekvencija.
+\label{sec:niz_frekvencija}
+Naivni algoritam za rešavanje problema čestih reči ima visoku vrsemensku složenost jer za svaki $k$-gram ponovo prolazi kroz celu sekvencu. Da bi se ovaj problem rešio efikasnije, uvodi se optimizovani pristup zasnovan na korišćenju niza frekvencija.
 
 Osnovna ideja je da se kroz sekvencu prolazi samo jednom, pri čemu se za svaki $k$-gram beleži broj njegovih pojavljivanja. Umesto ponovnog prebrojavanja, rezultati se čuvaju u strukturi podataka koja omogućava brz pristup.
 
@@ -350,9 +354,9 @@ Kako bi se omogućilo efikasno skladištenje i pretraživanje, svaki $k$-gram se
 
 Ovi $k$-grami se mogu poređati leksikografski (kao u rečniku), pri čemu se svakom dodeljuje jedinstveni broj iz opsega $[0, 4^k - 1]$.
 
-Za ovu transformaciju koriste se funkcije \textit{\textbf{PatternToNumber}} i \textit{\textbf{NumberToPattern}}, koje omogućavaju prelazak između simboličkog i numeričkog prikaza $k$-grama.
+Za ovu transformaciju koriste se funkcije \textit{\textbf{PatternToNumber}} i \textit{\textbf{NumberToPattern}}, koje omogućavaju prelazak između simboličke i numeričke reprezentacije $k$-grama.
 
-DNK alfabet $\{A, C, G, T\}$ može se predstaviti skupom brojeva:
+DNK alfabet $\{A, C, G, T\}$  može se mapirati na sledeći:
 \[
 A \rightarrow 0,\quad C \rightarrow 1,\quad G \rightarrow 2,\quad T \rightarrow 3
 \]
@@ -360,7 +364,7 @@ A \rightarrow 0,\quad C \rightarrow 1,\quad G \rightarrow 2,\quad T \rightarrow 
 
 Funkcija \textit{\textbf{SymbolToNumber}} predstavlja pomoćnu funkciju koja svakom simbolu DNK alfabeta (\texttt{A}, \texttt{C}, \texttt{G}, \texttt{T}) dodeljuje odgovarajuću numeričku vrednost (\texttt{0}, \texttt{1}, \texttt{2}, \texttt{3}), čime omogućava numeričku reprezentaciju $k$-grama u sistemu sa osnovom 4.
 
-Funkcija \textit{\textbf{PatternToNumber}} preslikava dati $k$-gram u odgovarajući indeks tako što njegov prefiks tretira kao već izračunatu vrednost, koju zatim množi sa 4 i dodaje vrednost poslednjeg simbola.  Ovaj postupak odgovara standardnoj konverziji iz pozicionog brojčanog sistema i omogućava da se svaki $k$-gram jednoznačno predstavi celobrojnim indeksom. Algoritam \ref{alg:pattern_to_number} prikazuje pseudokod ove funkcije.
+Funkcija \textit{\textbf{PatternToNumber}} preslikava dati k-gram u odgovarajući broj koristeći zapis u brojnom sistemu sa osnovom 4. Pri tome se prefiks k-grama posmatra kao već izračunata vrednost, koja se množi sa 4 i uvećava za numeričku vrednost poslednjeg simbola. Ovaj postupak odgovara standardnoj konverziji iz pozicionog brojnog sistema i i omogućava da se svaki k-gram jednoznačno predstavi celobrojnom vrednošću. U algoritmu zasnovanom na nizu frekvencija, dobijena celobrojna vrednost predstavlja indeks odgovarajućeg elementa niza frekvencija, u kojem se čuva broj pojavljivanja datog k-grama. Algoritam \ref{alg:pattern_to_number} prikazuje pseudokod  funkcije \textit{\textbf{PatternToNumber}}.
 
 \begin{algorithm}[h]
 \caption{PatternToNumber}
@@ -381,7 +385,7 @@ $prefix \gets$ $Pattern$ bez poslednjeg simbola\;
 }
 \end{algorithm}
 
-Obrnuta transformacija vrši se funkcijom \textit{\textbf{NumberToPattern}}, koja dati indeks pretvara nazad u odgovarajući $k$-gram. Funkcija \textit{\textbf{NumberToSymbol}} vrši obrnutu transformaciju u odnosu na funkciju \textit{\textbf{SymbolToNumber}}, tako što svakoj numeričkoj vrednosti iz skupa \texttt{(0,1,2,3)} dodeljuje odgovarajući simbol DNK alfabeta (\texttt{A}, \texttt{C}, \texttt{G}, \texttt{T}). Ova funkcija, Algoritam \ref{alg:number_to_pattern} prikazuje pseudokod, koristi operacije celobrojnog deljenja i ostatka pri deljenju sa 4: količnik određuje prefiks, dok ostatak određuje poslednji simbol. Na taj način se postupno rekonstruiše ceo $k$-gram. 
+Obrnuta transformacija vrši se funkcijom \textit{\textbf{NumberToPattern}}, koja dati indeks pretvara nazad u odgovarajući $k$-gram. Funkcija \textit{\textbf{NumberToSymbol}} vrši obrnutu transformaciju u odnosu na funkciju \textit{\textbf{SymbolToNumber}}, tako što svakoj numeričkoj vrednosti iz skupa \texttt{(0,1,2,3)} dodeljuje odgovarajući simbol DNK alfabeta (\texttt{A}, \texttt{C}, \texttt{G}, \texttt{T}). Algoritam \ref{alg:number_to_pattern} prikazuje pseudokod funkcije \textit{\textbf{NumberToSymbol}}, koriste se operacije celobrojnog deljenja i ostatka pri deljenju sa 4: količnik određuje prefiks, dok ostatak određuje poslednji simbol. Na taj način se postupno rekonstruiše ceo $k$-gram. 
 
 \begin{algorithm}[h]
 \caption{NumberToPattern}
@@ -405,7 +409,7 @@ $prefixPattern \gets$ NumberToPattern$(prefixIndex, k-1)$\;
 }
 \end{algorithm}
 
-Ove dve funkcije zajedno omogućavaju efikasan prelazak između simboličkog i numeričkog prikaza $k$-grama, što je ključno za implementaciju algoritama zasnovanih na nizovima frekvencija.
+Ove dve funkcije zajedno omogućavaju efikasan prelazak između simboličke i numeričke reprezentacije $k$-grama, što je ključno za implementaciju algoritama zasnovanih na nizovima frekvencija.
 
 
 
@@ -437,7 +441,7 @@ Algoritam za izračunavanje frekvencija prolazi kroz tekst samo jednom i za svak
 
 
 
-Nakon što je niz frekvencija izračunat, najčešći $k$-grami se dobijaju pronalaženjem maksimalne vrednosti u nizu i identifikacijom svih indeksa koji imaju tu vrednost. Algoritam \ref{alg:faster_frequent_words} prikazuje pseudokod funkcije \textit{Faster Frequent Words}.
+Nakon što je niz frekvencija izračunat, najčešći $k$-grami se dobijaju pronalaženjem maksimalne vrednosti u nizu i identifikacijom svih indeksa i njima odgovarajućih k-grama koji imaju tu vrednost. Algoritam \ref{alg:faster_frequent_words} prikazuje pseudokod funkcije \textit{Faster Frequent Words}.
 
 
 \begin{algorithm}[h]
@@ -473,7 +477,7 @@ Na slici \ref{fig:frequency} prikazan je primer leksikografskog uređenja svih m
 Na primer, 2-gram \texttt{GT} ima indeks \texttt{11} što znači da funkcija: \textit{\texttt{PatternToNumber(GT)}}=11. Obrnuto, funkcija: \textit{\texttt{NumberToPattern}}(11,2) vraća \texttt{GT}.
 
 
-Na ovaj način omogućava se efikasno mapiranje između simboličkog i numeričkog prikaza $k$-grama, što predstavlja osnovu za konstrukciju niza frekvencija. 
+Na ovaj način omogućava se efikasno mapiranje između simboličke i numeričke reprezentacije $k$-grama, što predstavlja osnovu za konstrukciju niza frekvencija. 
 
 Niz frekvencija prikazan na Slici \ref{fig:frequency} predstavlja broj pojavljivanja svakog 2-grama u posmatranoj sekvenci. Na primer, vrednost 3 na poziciji koja odgovara 2-gramu \texttt{AA} pokazuje da se ovaj obrazac pojavljuje tri puta u sekvenci. Slično tome, 2-gram \texttt{GG} takođe ima frekvenciju 3, dok se neki obrasci ne pojavljuju nijednom, pa je njihova frekvencija jednaka 0. Na ovaj način niz frekvencija omogućava efikasno određivanje najčešćih $k$-grama bez ponovnog prolaska kroz celu sekvencu.
 
@@ -486,9 +490,9 @@ Niz frekvencija prikazan na Slici \ref{fig:frequency} predstavlja broj pojavljiv
 
 \subsubsection{Vremenska složenost optimizovanog pristupa}
 
-U ovom pristupu tekst se obrađuje samo jednom, pri čemu se za svaki $k$-gram vrši njegova obrada i konverzija u numerički oblik, što daje složenost $O(|Text| \cdot k)$.
+U ovom pristupu niska \textit{Text} se obrađuje samo jednom, pri čemu se za svaki $k$-gram vrši njegova obrada i konverzija u numerički oblik, što daje složenost $O(|Text| \cdot k)$.
 
-Međutim, dodatni trošak predstavlja inicijalizacija niza dimenzije $4^k$, kao i iteracija kroz ceo niz prilikom traženja maksimuma i rekonstrukcije odgovarajućih $k$-grama. Ukupna složenost algoritma iznosi:
+Međutim, dodatni trošak predstavlja inicijalizacija niza frekvencija dimenzije $4^k$, kao i iteracija kroz ceo niz prilikom traženja maksimuma i rekonstrukcije odgovarajućih $k$-grama. Ukupna složenost algoritma iznosi:
 
 \[
 O(|Text| \cdot k + 4^k \cdot k)
@@ -508,11 +512,11 @@ Ovaj pristup je značajno efikasniji od naivnog algoritma kada je $k$ relativno 
 
 Prethodno opisani pristup korišćenjem niza frekvencija omogućava efikasnije rešavanje problema čestih reči u odnosu na naivni algoritam, ali ima jedan važan nedostatak. Dimenzija niza frekvencija iznosi $4^k$, jer se unapred rezerviše mesto za svaki mogući $k$-gram nad DNK alfabetom. Kada je vrednost $k$ veća, broj mogućih $k$-grama raste eksponencijalno, pa ovaj pristup može zahtevati veliku količinu memorije.
 
-Da bi se ovaj problem ublažio, uvodi se optimizovani pristup zasnovan na korišćenju heš mape, odnosno rečnika. Umesto da se čuva frekvencija za svaki mogući $k$-gram, u memoriji se čuvaju samo oni $k$-grami koji se zaista pojavljuju u posmatranoj DNK sekvenci.
+Da bi se ovaj problem ublažio, uvodi se optimizovani pristup zasnovan na korišćenju heš mape, odnosno rečnika. Umesto da se čuva frekvencija za svaki mogući $k$-gram, u memoriji se čuvaju samo brojači onih $k$-grama koji se zaista pojavljuju u posmatranoj DNK sekvenci.
 
-Osnovna ideja je da se kroz tekst prolazi samo jednom. U svakom koraku izdvaja se trenutni $k$-gram, a zatim se u heš mapi ažurira broj njegovih pojavljivanja. Ključ u heš mapi predstavlja $k$-gram, dok vrednost predstavlja broj njegovih pojavljivanja u tekstu.
+Osnovna ideja je ista kao u prethodno objašnjenom pristupu, odnosno, kroz nisku \textit{Text} prolazi se samo jednom. U svakom koraku izdvaja se trenutni $k$-gram, a zatim se u heš mapi ažurira broj njegovih pojavljivanja. Ključ u heš mapi predstavlja $k$-gram, dok vrednost predstavlja broj njegovih pojavljivanja u tekstu.
 
-Ako se posmatrani $k$-gram prvi put pojavljuje, on se dodaje u heš mapu sa vrednošću 1. Ukoliko već postoji u heš mapi, njegova vrednost se uvećava za 1. Na taj način se izbegava ponovno prebrojavanje pojavljivanja istog obrasca, kao i čuvanje frekvencija za obrasce koji se uopšte ne pojavljuju u sekvenci.
+Ako se posmatrani $k$-gram prvi put pojavljuje, on se dodaje u heš mapu sa vrednošću 1. Ukoliko već postoji u heš mapi, njegova vrednost se uvećava za 1. Na taj način se izbegava ponovno prebrojavanje pojavljivanja istog k-grama, kao i čuvanje frekvencija za k-grame koji se uopšte ne pojavljuju u sekvenci.
 
 \subsubsection{Algoritam}
 
@@ -598,7 +602,7 @@ Kombinovanjem svih koraka dolazi se do ukupne vremenske složenosti:
 O(|Text| \cdot k)
 \]
 
-Za razliku od pristupa sa nizom frekvencija, ovde nije potrebno inicijalizovati niz dimenzije $4^k$, niti prolaziti kroz sve moguće $k$-grame. Pretražuju se samo oni obrasci koji su se stvarno pojavili u tekstu.
+Za razliku od pristupa sa nizom frekvencija, ovde nije potrebno inicijalizovati niz dimenzije $4^k$, niti prolaziti kroz sve moguće $k$-grame. Pretražuju se samo oni obrasci koji su se stvarno pojavili u niski \textit{Text}.
 
 Prostorna složenost zavisi od broja različitih $k$-grama u posmatranoj sekvenci. U najgorem slučaju, svi izdvojeni $k$-grami mogu biti različiti, pa je broj elemenata u heš mapi najviše $|Text| - k + 1$. Kako svaki $k$-gram zauzima $O(k)$ memorije, ukupna prostorna složenost iznosi:
 
@@ -606,15 +610,15 @@ Prostorna složenost zavisi od broja različitih $k$-grama u posmatranoj sekvenc
 O(|Text| \cdot k)
 \]
 
-Ovaj pristup je posebno koristan za veće vrednosti $k$, jer izbegava eksponencijalni memorijski trošak koji nastaje kod niza frekvencija. Zbog toga predstavlja praktičniju optimizaciju kada nije potrebno čuvati informacije o $k$-gramima koji se ne pojavljuju u ulaznoj sekvenci.
+Ovaj pristup je posebno koristan za veće vrednosti $k$, jer izbegava eksponencijalni memorijski trošak koji nastaje kod niza frekvencija. Zbog toga predstavlja efikasniju optimizaciju kada nije potrebno čuvati informacije o $k$-gramima koji se ne pojavljuju u ulaznoj sekvenci.
 
 \subsection{Pronalaženje najčešćih $k$-grama sortiranjem}
-
+\label{sec:sortiranje}
 Pored pristupa zasnovanog na nizu frekvencija, problem čestih reči može se rešiti i korišćenjem sortiranja. Osnovna ideja ovog pristupa je da se svi $k$-grami najpre transformišu u numeričke vrednosti, nakon čega se sortiraju, čime se identični elementi grupišu jedan do drugog.
 
-Neka je data niska $Text$. Za svaku poziciju $i$ izdvajamo $k$-gram $Text[i..i+k-1]$ i transformišemo ga u odgovarajući broj korišćenjem funkcije \textit{\textbf{PatternToNumber}}. Na taj način dobijamo niz indeksa koji zatim sortiramo. Algoritam \ref{alg:ffw_sorting} prikazuje pseudokod ovog pristupa.
+Neka je data niska $Text$. Za svaku poziciju $i$ izdvajamo $k$-gram $Text[i..i+k-1]$ i transformišemo ga u odgovarajući broj korišćenjem funkcije \textit{\textbf{PatternToNumber}}. Na taj način dobijamo niz indeksa koji zatim sortiramo. 
 
-Nakon sortiranja, identični $k$-grami se pojavljuju u uzastopnim segmentima niza, što omogućava jednostavno prebrojavanje njihovih pojavljivanja.
+Nakon sortiranja, identični $k$-grami se pojavljuju u uzastopnim segmentima niza, što omogućava jednostavno prebrojavanje njihovih pojavljivanja. Algoritam \ref{alg:ffw_sorting} prikazuje pseudokod ovog pristupa.
 
 \begin{algorithm}[h]
 \caption{Finding Frequent Words by Sorting}
@@ -668,7 +672,8 @@ Za $k = 2$ izdvajaju se svi 2-grami redom kojim se pojavljuju u sekvenci i trans
 \end{figure}
 
 
-Nakon sortiranja identični indeksi se grupišu jedan do drugog (Slika \ref{fig:sorted}).
+Nakon sortiranja identični indeksi se grupišu jedan do drugog (Slika \ref{fig:sorted}). Zatim se prolaskom kroz sortirani niz određuje dužina svakog uzastopnog segmenta identičnih indeksa. Segment sa najvećim brojem elemenata odgovara k-gramu koji se pojavljuje najveći broj puta u posmatranoj sekvenci.
+
 \begin{figure}[h]
 \centering
 \includegraphics[width=0.8\textwidth]{images/sorted.png}
@@ -676,7 +681,7 @@ Nakon sortiranja identični indeksi se grupišu jedan do drugog (Slika \ref{fig:
 \label{fig:sorted}
 \end{figure}
 
-Ovakav raspored omogućava jednostavno određivanje frekvencija, jer se najčešći $k$-grami pojavljuju kao najduži uzastopni segmenti identičnih vrednosti u sortiranom nizu.
+
 
 U ovom primeru indeks \texttt{0} odgovara 2-gramu \texttt{AA}, dok indeks \texttt{10} odgovara 2-gramu \texttt{GG}. Kako se oba indeksa pojavljuju tri puta, zaključuje se da su \texttt{AA} i \texttt{GG} najčešći 2-grami u datoj sekvenci.
 
@@ -703,7 +708,7 @@ O(|Text| \log |Text| + |Text| \cdot k)
 \subsection{Poređenje različitih pristupa}
 
 
-Na osnovu poređenja prikazanog u Tabeli \ref{tab:comparison} može se zaključiti da izbor algoritma zavisi od vrednosti parametra $k$, dužine ulazne sekvence i raspoloživih memorijskih resursa. Pristup zasnovan na nizu frekvencija efikasan je za manje vrednosti parametra $k$, dok je za veće vrednosti pogodniji pristup zasnovan na heš mapi, jer ne zahteva memoriju veličine $4^k$. Pristup zasnovan na sortiranju predstavlja kompromis između vremenske i prostorne složenosti, dok je naivni algoritam prvenstveno pogodan za ilustraciju problema i obradu kraćih sekvenci.
+Na osnovu poređenja prikazanog u Tabeli \ref{tab:comparison} može se zaključiti da izbor algoritma zavisi od vrednosti parametra $k$, dužine ulazne sekvence \textit{Text} i raspoloživih memorijskih resursa. Pristup zasnovan na nizu frekvencija efikasan je za manje vrednosti parametra $k$, dok je za veće vrednosti pogodniji pristup zasnovan na heš mapi, jer ne zahteva memoriju veličine $4^k$. Pristup zasnovan na sortiranju predstavlja kompromis između vremenske i prostorne složenosti, dok je naivni algoritam prvenstveno pogodan za ilustraciju problema i obradu kraćih sekvenci.
 \begin{table}[H]
 \centering
 \renewcommand{\arraystretch}{1}
@@ -740,7 +745,7 @@ Ne zahteva niz veličine $4^k$, ali je sporiji od pristupa sa heš mapom zbog so
 \end{table}
 
 
-\section{Problem pronalaženja grupa (\textit{Clump Finding Problem})}
+\section{Problem pronalaženja grupa}
 
 Sama učestalost podniski na nivou celog genoma nije uvek dovoljna za preciznu identifikaciju funkcionalno značajnih regiona. U praksi je često mnogo značajnije posmatrati lokalnu frekvenciju podniski unutar kraćih segmenata genoma. Na primer, određeni $k$-gram može se pojavljivati relativno često u celom genomu, ali ukoliko su njegova pojavljivanja grupisana u kratkom regionu, takav obrazac može ukazivati na biološki značajan signal. Ovakva pojava je posebno izražena kod \textit{DnkA} boksova, koji se često pojavljuju u grupama unutar početnog regiona replikacije, odnosno \textit{oriC} regiona. Zbog toga analiza lokalnih ponavljanja predstavlja prirodno proširenje problema čestih reči.
 
@@ -771,7 +776,7 @@ Konkretno, u tom regionu izdvajaju se sledeći obrasci:
 
 Ono što ih čini posebno interesantnim jeste činjenica da se oba pojavljuju više puta i to u neposrednoj blizini, unutar istog kratkog regiona genoma. Važno je naglasiti da ovakva pojava nije verovatna u slučajnoj DNK sekvenci. Verovatnoća da se isti 9-mer pojavi više puta u kratkom segmentu genoma je veoma mala. Na primer, verovatnoća da se neki 9-mer pojavi tri ili više puta u slučajno generisanom DNK nizu dužine 500 iznosi približno $1/1300$. Zbog toga se ovakvi obrasci smatraju statistički značajnim, a upravo takvi grupisani motivi predstavljaju \textit{DnkA} boksove.
 
-Važno je naglasiti da \textit{DnkA} boksovi nisu univerzalni i da se njihov konkretan nukleotidni sastav razlikuje između različitih organizama. Na primer, analiza \textit{oriC} regiona bakterije \textit{Thermotoga petrophila}, prikazanog na Slici \ref{figg:thermotoga}, pokazuje da se obrasci \texttt{ATGATCAAG} i \texttt{CTTGATCAT}, koji su karakteristični za \textit{Vibrio cholerae}, u ovom genomu uopšte ne pojavljuju. Umesto toga, izdvajaju se drugačiji često zastupljeni 9-grami, kao što su \texttt{AACCTACCA}, \texttt{ACCTACCAC},  \texttt{CCTACCACC} i drugi slični motivi.
+Važno je naglasiti da \textit{DnkA} boksovi nisu univerzalni i da je nukleotidni sastav \textit{DnkA} boksova specifičan za različite organizme. Na primer, analiza \textit{oriC} regiona bakterije \textit{Thermotoga petrophila}, prikazanog na Slici \ref{figg:thermotoga}, pokazuje da se obrasci \texttt{ATGATCAAG} i \texttt{CTTGATCAT}, koji su karakteristični za \textit{Vibrio cholerae}, u ovom genomu uopšte ne pojavljuju. Umesto toga, izdvajaju se drugačiji često zastupljeni 9-grami, kao što su \texttt{AACCTACCA}, \texttt{ACCTACCAC},  \texttt{CCTACCACC} i drugi slični motivi.
 
 \begin{figure}[h]
 \centering
@@ -780,7 +785,7 @@ Važno je naglasiti da \textit{DnkA} boksovi nisu univerzalni i da se njihov kon
 \label{figg:thermotoga}
 \end{figure}
 
-Da bismo formalizovali problem i započeli sa njegovim rešavanjem, ključna informacija je da se ovi obrasci pojavljuju lokalno grupisano. Zbog toga se uvodi problem pronalaženja grupa (\textit{Clump Finding Problem}), čiji je cilj identifikacija $k$-grama koji se pojavljuju više puta unutar ograničenog regiona genoma.
+Da bismo formalizovali problem i započeli sa njegovim rešavanjem, ključna informacija je da se ovi obrasci pojavljuju lokalno grupisano. Zbog toga se uvodi problem pronalaženja grupa (eng. \textit{Clump Finding Problem}), čiji je cilj identifikacija $k$-grama koji se pojavljuju više puta unutar ograničenog regiona genoma.
 
 
 \subsection{Algoritam}
@@ -794,7 +799,7 @@ Problem pronalaženja grupa formalno se definiše na sledeći način:
 
 Kažemo da $k$-gram formira $(L,t)$-grupu ukoliko postoji podniska genoma dužine $L$ u kojoj se posmatrani $k$-gram pojavljuje najmanje $t$ puta.
 
-Drugim rečima, traže se svi obrasci dužine $k$ koji su lokalno učestali u makar jednom segmentu genoma dužine $L$.
+Drugim rečima, traže se sve podsekvence dužine $k$ koje su lokalno učestale u makar jednom segmentu genoma dužine $L$.
 
 \subsubsection{Naivni pristup}
 
@@ -817,25 +822,20 @@ Algoritam \ref{alg:clump_naive} prikazuje ovu osnovnu varijantu.
 \SetKwProg{Fn}{Funkcija}{}{}
 \Fn{\FRec{Genome, k, L, t}}{
     $FrequentPatterns \gets$ prazan skup\;
-    $Clump \gets$ niz dužine $4^k$ inicijalizovan na 0\;
-
+    
     \For{$i \gets 0$ \KwTo $|Genome| - L$}{
         $Text \gets Genome[i..i+L-1]$\;
         $FrequencyArray \gets$ ComputingFrequencies$(Text, k)$\;
 
         \For{$index \gets 0$ \KwTo $4^k - 1$}{
             \If{$FrequencyArray[index] \ge t$}{
-                $Clump[index] \gets 1$\;
+                $Pattern \gets$ NumberToPattern$(index, k)$\;
+                dodaj $Pattern$ u $FrequentPatterns$\;
             }
         }
     }
 
-    \For{$i \gets 0$ \KwTo $4^k - 1$}{
-        \If{$Clump[i] = 1$}{
-            $Pattern \gets$ NumberToPattern$(i, k)$\;
-            dodaj $Pattern$ u $FrequentPatterns$\;
-        }
-    }
+    
 
     \Return{$FrequentPatterns$}
 }
@@ -851,7 +851,7 @@ Na primer, ukoliko se obrazac \texttt{ATGATCAAG} tri puta pojavi unutar jednog s
 
 \subsection{Vremenska složenost naivnog pristupa}
 
-Analiza vremenske složenosti zasniva se na broju prozora i operacija koje se izvršavaju u svakom od njih.
+Vremenska složenost određuje se na osnovu broja prozora i broja operacija koje se izvršavaju unutar svakog od njih.
 
 Broj prozora dužine $L$ u niski $Genome$ jednak je:
 \[
@@ -864,13 +864,8 @@ Za svaki prozor najpre se računa niz frekvencija. Funkcija \textit{\textbf{Comp
 O(4^k + L \cdot k)
 \]
 
-Nakon toga se prolazi kroz svih $4^k$ mogućih indeksa kako bi se proverilo da li je frekvencija odgovarajućeg $k$-grama bar $t$, što zahteva dodatnih:
 
-\[
-O(4^k)
-\]
-
-operacija. Kombinovanjem ovih koraka dobija se da je ukupna složenost jedne iteracije prozora:
+ Kombinovanjem ovih koraka dobija se da je ukupna složenost jedne iteracije prozora:
 
 \[
 O(4^k + L \cdot k)
@@ -891,7 +886,7 @@ Za velike genome ovaj pristup postaje veoma skup, jer se za svaki prozor iznova 
 
 \subsection{Optimizacija kliznog prozora}
 
-Glavni nedostatak naivnog pristupa jeste to što se niz frekvencija pri svakom pomeranju prozora računa iz početka, iako se između dva uzastopna prozora menja veoma mali broj podataka.
+Glavni nedostatak naivnog pristupa jeste to što se niz frekvencija pri svakom pomeranju prozora računa iz početka, iako se između dva uzastopna prozora menjaju frekvencije za veoma mali broj k-grama.
 
 Kada se prozor pomeri za jednu poziciju udesno:
 \begin{itemize}
@@ -920,14 +915,17 @@ Algoritam \ref{alg:better_clump} prikazuje optimizovanu verziju pronalaženja gr
 \SetKwProg{Fn}{Funkcija}{}{}
 \Fn{\FRec{Genome, k, t, L}}{
     $FrequentPatterns \gets$ prazan skup\;
-    $Clump \gets$ niz dužine $4^k$ inicijalizovan na 0\;
+    
 
     $Text \gets Genome[0..L-1]$\;
     $FrequencyArray \gets$ ComputingFrequencies$(Text, k)$\;
 
     \For{$i \gets 0$ \KwTo $4^k - 1$}{
         \If{$FrequencyArray[i] \ge t$}{
-            $Clump[i] \gets 1$\;
+
+            $Pattern \gets$ NumberToPattern$(i, k)$\;
+            dodaj $Pattern$ u $FrequentPatterns$\;
+            
         }
     }
 
@@ -941,16 +939,13 @@ Algoritam \ref{alg:better_clump} prikazuje optimizovanu verziju pronalaženja gr
         $FrequencyArray[indexLast] \gets FrequencyArray[indexLast] + 1$\;
 
         \If{$FrequencyArray[indexLast] \ge t$}{
-            $Clump[indexLast] \gets 1$\;
+            $Pattern \gets$ NumberToPattern$(indexLast, k)$\;
+            dodaj $Pattern$ u $FrequentPatterns$\;
+           
         }
     }
 
-    \For{$i \gets 0$ \KwTo $4^k - 1$}{
-        \If{$Clump[i] = 1$}{
-            $Pattern \gets$ NumberToPattern$(i, k)$\;
-            dodaj $Pattern$ u $FrequentPatterns$\;
-        }
-    }
+    
 
     \Return{$FrequentPatterns$}
 }
@@ -972,11 +967,6 @@ S obzirom na to da postoji $|Genome| - L$ pomeranja prozora, ukupni trošak ažu
 O((|Genome| - L)\cdot k)
 \]
 
-Na kraju se prolazi kroz niz $Clump$ dužine $4^k$ kako bi se rekonstruisali svi $k$-grami koji zadovoljavaju uslov. Ovaj korak uključuje konverziju indeksa u $k$-gram pomoću funkcije \textit{\textbf{NumberToPattern}}, koja zahteva $O(k)$ vremena, pa ukupna složenost ovog dela iznosi:
-
-\[
-O(4^k \cdot k)
-\]
 
 
 
@@ -1007,9 +997,11 @@ Ovaj rezultat predstavlja značajno poboljšanje u odnosu na naivni pristup, jer
 
 \section{Asimetrija replikacije DNK i \textit{Skew} dijagram}
 
-Proces replikacije DNK započinje u specifičnom regionu genoma poznatom kao \textit{oriC}, odakle se replikacija odvija u oba smera duž hromozoma, sve do regiona označenog kao \textit{terC}. Tokom ovog procesa formiraju se dve replikacione viljuške (\textit{replication forks}), duž kojih se replikacija odvija u suprotnim smerovima.
+Proces replikacije DNK započinje u specifičnom regionu genoma poznatom kao \textit{oriC}, odakle se replikacija odvija u oba smera duž hromozoma, sve do regiona označenog kao \textit{terC} (eng.\textit{ termination of chromosomal replication}). Tokom ovog procesa formiraju se dve replikacione viljuške (eng. \textit{replication forks}), duž kojih se replikacija odvija u suprotnim smerovima.
 
-DNK polimeraza sintetiše novi lanac na osnovu postojećeg, ali može da dodaje nukleotide isključivo u smeru $5' \rightarrow 3'$.  Postavlja se pitanje kako se vrši replikacija u suprotnom smeru, $3' \rightarrow 5'$. Ovo ograničenje dovodi do asimetrije u procesu replikacije i predstavlja osnovu za kasnije nastajanje razlika u raspodeli nukleotida duž genoma.
+DNK polimeraza sintetiše novi lanac na osnovu postojećeg, ali može da nadovezuje nukleotide isključivo u smeru $5' \rightarrow 3'$. Postavlja se pitanje na koji način se onda vrši sinteza novog lanca duž drugog lanca koji ima usmerenje $3' \rightarrow 5'$. Uslovljena orijentacija sinteze novog lanca dovodi do asimetrije u procesu replikacije i predstavlja osnovu za kasnije nastajanje razlika u raspodeli nukleotida duž genoma, o čemu će biti više reči u nastavku.
+
+
 
 \subsection{Okazaki fragmenti i asimetrija replikacije}
 
@@ -1017,28 +1009,28 @@ DNK polimeraza sintetiše novi lanac na osnovu postojećeg, ali može da dodaje 
 
 Ograničenje da DNK polimeraza može da sintetiše novi lanac isključivo u smeru $5' \rightarrow 3'$ ima značajne posledice na proces replikacije. Iako se oba roditeljska lanca replikuju istovremeno, smer nastajanja duplikata nije isti.
 
-Na osnovu smera replikacije, kružni bakterijski hromozom može se podeliti na dve polovine označene kao \textit{forward half-strand} i \textit{reverse half-strand}. Na \textit{reverse half-strand} polovini hromozoma DNK polimeraza može kontinuirano da prati otvaranje DNK molekula i sintetiše novi lanac bez prekida. Nasuprot tome, na \textit{forward half-strand} polovini hromozoma smer kretanja DNK polimeraze se razlikuje od orijentacije lanca, pa se sinteza ne može odvijati kontinualno.
+Na osnovu smera replikacije, kružni bakterijski hromozom može se podeliti na dve polovine označene kao zaostajući (eng. \textit{forward half-strand}) i vodeći lanac (eng. \textit{reverse half-strand}). Na vodećem lancu DNK polimeraza može kontinuirano da prati otvaranje DNK molekula i sintetiše novi lanac bez prekida. Nasuprot tome, na zaostajućem lancu smer kretanja DNK polimeraze se razlikuje od orijentacije lanca, pa se sinteza ne može odvijati kontinualno.
 
-Kao što je prikazano na Slici \ref{fig:half_strands},  hromozom se može podeliti na \textit{reverse half-strand} polovinu i na \textit{forward half-strand} polovinu odnosu na položaj početka replikacije (\textit{oriC}).
+Kao što je prikazano na Slici \ref{fig:half_strands}, hromozom se može podeliti na vodeći i na zaostajući lanac u odnosu na položaj početka replikacije (\textit{oriC}).
 
 \begin{figure}[h]
 \centering
 \includegraphics[width=0.75\textwidth]{images/forward_reverse_half_strands.png}
-\caption{Forward i reverse half-strand tokom procesa replikacije DNK \cite{online_book}.}
+\caption{Vodeći i zaostajući lanac tokom procesa replikacije DNK \cite{online_book}.}
 \label{fig:half_strands}
 \end{figure}
 
 
-Pošto DNK polimeraza ne može da sintetiše DNK u smeru $3' \rightarrow 5'$, na \textit{forward half-strand} polovini hromozoma neophodno je višestruko započinjanje sinteze. Svaki novi segment započinje formiranjem RNK prajmera, odnosno kratkog lanca RNK koji sintetiše enzim primaza i koji obezbeđuje početni $3'$ kraj sa koga DNK polimeraza može započeti sintezu. Ovi kratki DNK segmenti nazivaju se \textbf{Okazaki fragmenti}.
+Pošto DNK polimeraza ne može da sintetiše DNK u smeru $3' \rightarrow 5'$, na zaostajućem lancu neophodno je višestruko započinjanje sinteze. Svaki novi segment započinje formiranjem RNK prajmera, odnosno kratkog lanca RNK koji sintetiše enzim primaza i koji obezbeđuje početni $5'$ kraj sa koga DNK polimeraza može započeti sintezu. Ovi kratki DNK segmenti nazivaju se \textbf{Okazaki fragmenti}.
 
-Kako se replikacioni viljuškasti region pomera, nastaju novi Okazaki fragmenti, a DNK polimeraza periodično započinje sintezu novih fragmenata. Po završetku replikacije, RNK prajmeri se uklanjaju, njihovo mesto popunjavaju DNK nukleotidi, a enzim DNK ligaza povezuje susedne fragmente u kontinuirani lanac. Zbog isprekidane sinteze, na \textit{forward half-strand} polovini hromozoma potreban je poseban RNK prajmer za svaki novonastali Okazaki fragment. Nasuprot tome, na \textit{reverse half-strand} polovini hromozoma sinteza se odvija kontinualno, pa je dovoljan samo jedan RNK prajmer \cite{alberts2022}. 
+Kako se replikaciona viljuška pomera duž DNK molekula, nastaju novi Okazakijevi fragmenti, a DNK polimeraza periodično započinje sintezu novih fragmenata. Po završetku replikacije, RNK prajmeri se uklanjaju, njihovo mesto popunjavaju komplementarnim nukleotidima, a enzim DNK ligaza povezuje susedne fragmente u kontinuirani lanac. Zbog isprekidane sinteze, na zaostajućem lancu potreban je poseban RNK prajmer za svaki novonastali Okazaki fragment. Nasuprot tome, na vodećem lancu sinteza se odvija kontinualno, pa je dovoljan samo jedan RNK prajmer \cite{alberts2022}. 
 
-Na Slici \ref{fig:replikacija1} prikazana je asimetrija replikacije DNK na \textit{reverse} i \textit{forward half-strand} polovini hromozoma, dok Slika \ref{fig:asimetrija} prikazuje ilustraciju koraka.
+Na Slici \ref{fig:replikacija1} prikazana je asimetrija replikacije DNK na vodećem i zaostajućem lancu, dok Slika \ref{fig:asimetrija} prikazuje ilustraciju koraka tokom replikacije.
 
 \begin{figure}[h]
 \centering
 \includegraphics[width=0.75\textwidth]{images/asimetrija_replikacije.png}
-\caption{Asimetrija replikacije na reverse (leading) i forward (lagging) half-strand polovinama hromozoma \cite{leman2013}}
+\caption{Asimetrija replikacije na vodećem (leading) i zaostajućem (lagging) lancu \cite{leman2013}}
 \label{fig:replikacija1}
 \end{figure} 
 
@@ -1075,10 +1067,10 @@ Na Slici \ref{fig:replikacija1} prikazana je asimetrija replikacije DNK na \text
 ]
 
 % Titles
-\node[title] at (3.7,0) {Reverse half-strand};
+\node[title] at (3.7,0) {Vodeći lanac};
 \node[subtitle] at (3.7,-0.35) {kontinuirana sinteza};
 
-\node[title] at (12.0,0) {Forward half-strand};
+\node[title] at (12.0,0) {Zaostajući lanac};
 \node[subtitle] at (12.0,-0.35) {isprekidana sinteza};
 
 % Separator
@@ -1185,7 +1177,7 @@ Na Slici \ref{fig:replikacija1} prikazana je asimetrija replikacije DNK na \text
 
 \end{tikzpicture}%
 }
-\caption{Uporedni prikaz asimetrije replikacije DNK na \textit{reverse half-strand} i \textit{forward half-strand} polovini hromozoma. Plavi segment označava roditeljski DNK lanac koji služi kao matrica, zeleni segmenti označavaju RNK prajmere, a crveni segmenti novosintetisanu DNK.}
+\caption{Uporedni prikaz asimetrije replikacije DNK na vodećem i zaostajućem lancu. Plavi segment označava roditeljski DNK lanac koji služi kao matrica, zeleni segmenti označavaju RNK prajmere, a crveni segmenti novosintetisanu DNK.}
 \label{fig:asimetrija}
 \end{figure}
 Na Slici \ref{fig:okazaki_fragments} prikazan je proces formiranja Okazaki fragmenata i njihovo povezivanje u kontinuirani DNK lanac.
@@ -1197,20 +1189,22 @@ Na Slici \ref{fig:okazaki_fragments} prikazan je proces formiranja Okazaki fragm
 \label{fig:okazaki_fragments}
 \end{figure} 
 
-Zbog stalnog započinjanja i prekidanja sinteze, \textit{forward half-strand} provodi znatno više vremena u jednolančanom stanju od \textit{reverse half-strand} polovine hromozoma. Ova razlika između kontinuirane i isprekidane sinteze predstavlja osnovu za nastanak statističke asimetrije između dve polovine hromozoma.
+Zbog stalnog započinjanja i prekidanja sinteze, zaostajući lanac provodi znatno više vremena u jednolančanom stanju od vodećeg lanca. 
+Ova razlika između kontinuirane i isprekidane sinteze predstavlja osnovu za nastanak statističke asimetrije nukleotidnog sastava DNK u \textit{oriC} regionu.
+ 
 
-Jednolančana DNK je hemijski nestabilnija i podložnija mutacijama. Posebno je značajan proces deaminacije, pri kojem citozin (C) prelazi u timin (T). Ova mutacija se češće dešava na lancu koji duže ostaje jednolančan. Kao posledica toga, \textit{forward half-strand} vremenom gubi citozin, što dovodi do neravnomerne raspodele nukleotida između dva dela genoma, posebno između baza guanin (G) i citozin (C).
+Jednolančana DNK je hemijski nestabilnija i podložnija mutacijama. Posebno je značajan proces deaminacije, odnosno hemijski proces u kojem se iz molekula uklanja amino grupa. U ovom procesu dolazi do transformacije citozina u timin, što doprinosi promenama u nukleotidnom sastavu DNK. Ova mutacija se češće dešava na lancu koji duže ostaje jednolančan. Kao posledica toga, zaostajući lanac vremenom gubi citozin, što dovodi do neravnomerne raspodele nukleotida između dva dela genoma, posebno između baza guanin (G) i citozin (C).
 
-Ova asimetrija u raspodeli nukleotida predstavlja važan signal koji se može iskoristiti za identifikaciju početnog regiona replikacije. Naime, ako posmatramo genom duž njegove dužine, možemo uočiti da u jednom delu dominiraju određene baze, dok se u drugom delu ta raspodela menja. Ta promena u ponašanju direktno je povezana sa pozicijom \textit{oriC}.
+ Ova asimetrija u raspodeli nukleotida predstavlja važan signal koji se može iskoristiti za identifikaciju početnog regiona replikacije. Naime, raspodela nukleotida razlikuje se između dve polovine hromozoma usled različitih uslova sinteze vodećeg i zaostajućeg lanca. U regionu \textit{oriC}, gde započinje replikacija, dolazi do promene ovog obrasca raspodele nukleotida, zbog čega se upravo taj region može identifikovati analizom nukleotidne asimetrije.
 
-Da bi se ovaj fenomen formalizovao, uvodi se funkcija koja prati razliku između broja pojavljivanja baza G i C duž genoma. Ova funkcija predstavlja osnovu \textit{Skew} dijagrama.
+Da bi se ovaj fenomen formalizovao, uvodi se grafik koji grafički prikazuje razliku između pojavljivanja G i C duž genoma.
 
 
-\subsection{Iskrivljeni dijagram (\textit{Skew} Diagram)}
+\subsection{Iskrivljeni dijagram}
 
 \textit{GC-skew} predstavlja meru razlike između broja pojavljivanja baza guanin (G) i citozin (C) u prefiksu DNK sekvence.
 
-Formalno, za poziciju $i$ definišemo:
+Formalno, za poziciju $i$ definišemo meru:
 \[
 Skew(i) = \#G - \#C,
 \]
@@ -1221,9 +1215,9 @@ Početna vrednost funkcije je:
 Skew(0) = 0
 \]
 
-\subsubsection{Konstrukcija \textit{Skew} dijagrama}
+\subsubsection{Konstrukcija iskrivljenog dijagrama}
 
-\textit{Skew} dijagram se konstruiše prolaskom kroz sekvencu i inkrementalnim ažuriranjem vrednosti funkcije.
+Iskrivljeni dijagram (eng. \textit{Skew Diagram}) se konstruiše prolaskom kroz sekvencu i inkrementalnim ažuriranjem vrednosti funkcije.
 
 Za svaku poziciju važi:
 \begin{itemize}
@@ -1265,7 +1259,7 @@ $Skew[0] \gets 0$\;
 
 Vrednost funkcije $Skew(i)$ pokazuje karakterističan obrazac prilikom prolaska kroz genom. U jednom delu genoma vrednosti opadaju, dok u drugom počinju da rastu.
 
-Tačka u kojoj funkcija dostiže minimum predstavlja mesto promene ovog trenda i u praksi odgovara početnom regionu replikacije (\textit{oriC}). Intuitivno, minimum označava prelaz između dva dela genoma sa različitim statističkim osobinama, što je direktna posledica asimetrije procesa replikacije.
+Tačka u kojoj funkcija dostiže minimum predstavlja mesto promene ovog trenda i u zapravo odgovara početnom regionu replikacije (\textit{oriC}). Intuitivno, minimum označava prelaz između dva dela genoma sa različitim statističkim osobinama, što je direktna posledica asimetrije procesa replikacije.
 
 \subsubsection{Problem minimalnog \textit{skew}-a}
 
@@ -1282,7 +1276,7 @@ Na Slici \ref{fig:gc_skew_e} prikazan je \textit{GC-skew} dijagram za genom bakt
 
 Uočava se karakterističan obrazac u kome vrednost funkcije najpre raste, zatim opada i dostiže minimum, nakon čega ponovo počinje da raste. Ova promena trenda odražava prelaz između dva dela genoma sa različitim statističkim osobinama.
 
-Minimum funkcije dostiže se približno na poziciji od oko 4 miliona nukleotida i predstavlja kandidat za lokaciju početnog regiona replikacije (\textit{oriC}). Razlog za to je što upravo na tom mestu dolazi do promene između \textit{forward} i \textit{reverse half-strand}, odnosno do promene u raspodeli baza G i C.
+Minimum funkcije dostiže se približno na poziciji od oko 4 miliona nukleotida i predstavlja kandidat za lokaciju početnog regiona replikacije (\textit{oriC}). Razlog za to je što upravo na tom mestu dolazi do promene između zaostajućeg i vodećeg lanca, odnosno do promene u raspodeli baza G i C.
 
 Takođe, u suprotnom delu genoma funkcija dostiže maksimum, što odgovara regionu približno nasuprot \textit{oriC} na kružnom hromozomu. Ova simetrična struktura dijagrama posledica je same prirode replikacije, koja se odvija u oba smera od početne tačke.
 
@@ -1293,7 +1287,7 @@ Takođe, u suprotnom delu genoma funkcija dostiže maksimum, što odgovara regio
 \label{fig:gc_skew_e}
 \end{figure}
 
-\subsection{Vremenska složenost}
+\subsection{Vremenska i prostorna složenost}
 
 Algoritam za izračunavanje \textit{GC-skew} vrednosti zasniva se na jednom prolazu kroz DNK sekvencu. Za svaku poziciju u genomu vrši se ažuriranje vrednosti funkcije $Skew(i)$ na osnovu prethodne vrednosti, pri čemu se proverava samo trenutni nukleotid.
 
@@ -1310,21 +1304,21 @@ O(|Genome|).
 
 \subsection{Prednosti i ograničenja}
 
-Jedna od glavnih prednosti ovog pristupa jeste njegova jednostavna implementacija, kao i činjenica da se zasniva na linearnom prolazu kroz genom, što omogućava efikasno izračunavanje čak i za veoma duge sekvence. Dodatno, metoda ne zahteva unapred poznate obrasce u DNK, što je čini pogodnom za analizu genoma kod kojih relevantni motivi još uvek nisu identifikovani.
+Jedna od glavnih prednosti ovog pristupa jeste njegova jednostavna implementacija, kao i činjenica da se zasniva na jednom prolazu kroz genom, što omogućava efikasno izračunavanje čak i za veoma duge sekvence. Dodatno, metoda ne zahteva unapred poznate obrasce u DNK, što je čini pogodnom za analizu genoma kod kojih relevantni motivi još uvek nisu identifikovani.
 
 Sa druge strane, \textit{GC-skew} analiza ima i određena ograničenja. Pre svega, ona se oslanja na statističke osobine koje mogu varirati između različitih organizama, pa ne garantuje uvek precizno određivanje lokacije \textit{oriC} regiona. Takođe, uspešnost metode zavisi od izraženosti asimetrije u raspodeli nukleotida, koja u nekim genomima može biti slabo naglašena. Zbog toga se ovaj pristup, u praksi, najčešće koristi u kombinaciji sa algoritmima zasnovanim na analizi podniski, čime se postiže pouzdanija identifikacija biološki značajnih regiona.
 
 
 \section{Približno poklapanje sekvenci i česte reči sa propustima}
 
-U prethodnim poglavljima razmatrani su algoritmi zasnovani na tačnom poklapanju podniski u DNK sekvenci. Takav pristup podrazumeva da se funkcionalno značajni obrasci pojavljuju u potpuno identičnom obliku. Međutim, u realnim biološkim sistemima ova pretpostavka često nije zadovoljena zato što su DNK sekvence podložne mutacijama. Tada dolazi do zamene pojedinačnih nukleotida, pa se isti biološki motiv može pojaviti u više varijanti koje se razlikuju u manjem broju pozicija, ali i dalje zadržavaju svoju funkciju.
+U prethodnim poglavljima razmatrani su algoritmi zasnovani na tačnom poklapanju podniski u DNK sekvenci. Takav pristup podrazumeva da se funkcionalno značajni obrasci pojavljuju u potpuno identičnom obliku. Međutim, u realnim biološkim sistemima ova pretpostavka često nije zadovoljena zato što su DNK sekvence podložne mutacijama. Tada dolazi do zamene pojedinačnih nukleotida, pa se isti biološki motiv može pojaviti u više varijanti koje se razlikuju na manjem broju pozicija, ali i dalje zadržavaju svoju funkciju.
 
 
 Zbog toga algoritmi zasnovani isključivo na tačnom poklapanju mogu propustiti značajne obrasce. Da bi se ovaj problem prevazišao, uvodi se model približnog poklapanja sekvenci, koji omogućava poređenje uz dozvoljeni broj odstupanja. Ovaj model predstavlja prirodno proširenje prethodnih pristupa i čini osnovu za rešavanje problema čestih reči sa propustima.
 
-\subsection{Hamingova distanca}
+\subsection{Hamingovo rastojanje}
 
-Osnovna mera razlike između sekvenci jednake dužine jeste Hamingova distanca (\textit{Hamming distance}). Za dve sekvence $p$ i $q$ dužine $k$, Hamingova distanca definiše se kao broj pozicija na kojima se one razlikuju.
+Osnovna mera razlike između sekvenci jednake dužine jeste Hamingovo rastojanje (eng. \textit{Hamming distance}). Za dve sekvence $p$ i $q$ dužine $k$, Hamingovo rastojanje definiše se kao broj pozicija na kojima se one razlikuju.
 
 Ako su date sekvence
 \[
@@ -1332,12 +1326,12 @@ p = p_1 p_2 \dots p_k
 \quad \text{i} \quad
 q = q_1 q_2 \dots q_k,
 \]
-onda se Hamingova distanca može formalno zapisati kao:
+onda se Hamingovo rastojanje može formalno zapisati kao:
 \[
 HammingDistance(p, q) = |\{ i \mid p_i \neq q_i \}|.
 \] 
 
-Na primeru sa Slike \ref{fig:hamming_primer}, sekvence \texttt{ATCGTAGC} i \texttt{ATGGTCGC} razlikuju se u dve pozicije, pa je njihova Hamingova distanca jednaka 2.
+Na primeru sa Slike \ref{fig:hamming_primer}, sekvence \texttt{ATCGTAGC} i \texttt{ATGGTCGC} razlikuju se u dve pozicije, pa je njihovo Hamingovo rastojanje jednaka 2.
 
 \begin{figure}[h]
 \centering
@@ -1346,11 +1340,11 @@ Na primeru sa Slike \ref{fig:hamming_primer}, sekvence \texttt{ATCGTAGC} i \text
 \label{fig:hamming_primer}
 \end{figure}
  
-Ova mera predstavlja osnovni alat za procenu sličnosti između podniski. Što je Hamingova distanca manja, to su dve sekvence međusobno sličnije.
+Ova mera predstavlja osnovni alat za procenu sličnosti između podniski. Što je Hamingovo rastojanje manje, to su dve sekvence međusobno sličnije.
 
-\subsubsection{Algoritam za računanje Hamingove distance}
+\subsubsection{Algoritam za računanje Hamingovog rastojanja}
 
-Najjednostavniji način računanja Hamingove distance zasniva se na poređenju odgovarajućih karaktera u dve sekvence iste dužine. Svaki put kada se simboli razlikuju, brojač se uvećava za 1. Algoritam \ref{alg:hamming_distance} prikazuje pseudokod ove funckije.
+Najjednostavniji način računanja Hamingovog rastojanja zasniva se na poređenju odgovarajućih karaktera u dve sekvence iste dužine. Svaki put kada se simboli razlikuju, brojač se uvećava za 1. Algoritam \ref{alg:hamming_distance} prikazuje pseudokod ove funckije.
 
 \begin{algorithm}[h]
 \caption{Hamming Distance}
@@ -1374,9 +1368,9 @@ $d \gets 0$\;
 
 Ovaj algoritam prolazi kroz obe sekvence samo jednom i pri svakoj iteraciji proverava da li se simboli na istoj poziciji razlikuju. Zbog toga, njegova vremenska složenost je linearna u odnosu na dužinu sekvence.
 
-\subsection{Približno poklapanje obrazaca (\textit{Approximate Pattern Matching})}
+\subsection{Približno poklapanje obrazaca}
 
-Na osnovu Hamingove distance definiše se problem približnog poklapanja obrazaca. Za razliku od tačnog poklapanja, gde se zahteva potpuno podudaranje sekvenci, ovde se dozvoljava ograničen broj odstupanja.
+Na osnovu Hamingovog rastojanja definiše se problem približnog poklapanja obrazaca (eng. \textit{Approximate Pattern Matching}). Za razliku od tačnog poklapanja, gde se zahteva potpuno podudaranje sekvenci, ovde se dozvoljava ograničen broj odstupanja.
 
 Problem približnog poklapanja obrazaca formalno se definiše na sledeći način:
 
@@ -1386,13 +1380,13 @@ Problem približnog poklapanja obrazaca formalno se definiše na sledeći način
 
 \item\textbf{Izlaz:} sve pozicije u $Text$ na kojima se $Pattern$ pojavljuje sa najviše $d$ odstupanja
 \end{itemize}
-Drugim rečima, traže se sve podniske dužine $|Pattern|$ čija je Hamingova distanca od obrasca $Pattern$ manja ili jednaka $d$.
+Drugim rečima, traže se sve podniske dužine $|Pattern|$ čije je Hamingovo rastojanje od obrasca $Pattern$ manja ili jednaka $d$.
 
 
 
 \subsubsection{Algoritam za približno poklapanje}
 
-Najjednostavniji pristup rešavanju ovog problema zasniva se na kliznom prozoru. Prozor dužine $|Pattern|$ pomera se kroz sekvencu $Text$, a za svaku poziciju računa se Hamingova distanca između obrasca i odgovarajuće podniske. Algoritam \ref{alg:approximate_pattern_matching} prikazuje pseudokod ove funcije.
+Najjednostavniji pristup rešavanju ovog problema zasniva se na kliznom prozoru. Prozor dužine $|Pattern|$ pomera se kroz sekvencu $Text$, a za svaku poziciju računa se Hamingovo rastojanje između obrasca i odgovarajuće podniske. Algoritam \ref{alg:approximate_pattern_matching} prikazuje pseudokod ove funcije.
 
 \begin{algorithm}[h]
 \caption{Approximate Pattern Matching}
@@ -1418,7 +1412,7 @@ $positions \gets$ prazan skup\;
 
 \subsubsection{Objašnjenje rada algoritma}
 
-Algoritam sistematski razmatra sve podniske dužine $|Pattern|$ u tekstu. Za svaku od njih vrši se poređenje sa obrascem karakter po karakter, pri čemu se broji broj pozicija na kojima se razlikuju.
+Algoritam sistematski razmatra sve podniske dužine $|Pattern|$ u tekstu. Za svaku od njih vrši se poređenje sa obrascem karakter po karakter, pri čemu se prebrojava broj pozicija na kojima se razlikuju.
 
 Ukoliko broj razlika ne prelazi zadatu vrednost $d$, smatra se da na toj poziciji postoji približno poklapanje, pa se indeks te pozicije beleži u skup rezultata.
 
@@ -1443,13 +1437,13 @@ Na primer:
 
 \begin{itemize}
     \item Za $i = 0$: podniska je \texttt{AACAA}.  
-    Poređenjem sa \texttt{AAAAA} dobijamo razlike na dve pozicije, pa je $d_H = 2$ i ova pozicija se prihvata.
+    Poređenjem sa \texttt{AAAAA} dobijamo razliku na jednoj poziciji, pa je $d_H = 1$ i ova pozicija se prihvata.
 
     \item Za $i = 1$: podniska je \texttt{ACAAG}.  
-    Razlikuje se u tri pozicije, pa je $d_H = 3$ i ova pozicija se odbacuje.
+    Razlikuje se u dve pozicije, pa je $d_H = 2$ i ova pozicija se prihvata.
 
     \item Za $i = 2$: podniska je \texttt{CAAGC}.  
-    Razlikuje se u više od dve pozicije, pa se takođe odbacuje.
+    Razlikuje se u više od dve pozicije, pa se odbacuje.
 
     \item Za $i = 8$: podniska je \texttt{AAAAC}.  
     Razlikuje se u jednoj poziciji, pa je $d_H = 1$ i ova pozicija se prihvata.
@@ -1463,7 +1457,7 @@ Pored pronalaženja pozicija na kojima se obrazac pojavljuje sa odstupanjima, č
 \[
 ApproximatePatternCount(Text, Pattern, d),
 \]
-koja vraća broj podniski u tekstu čija je Hamingova distanca od obrasca $Pattern$ manja ili jednaka $d$.
+koja vraća broj podniski u tekstu čije je Hamingovo rastojanje od obrasca $Pattern$ manje ili jednako $d$.
 
 
 
@@ -1497,7 +1491,7 @@ Na kraju, algoritam vraća ukupan broj približnih pojavljivanja, odnosno vredno
 
 \subsection{Vremenska složenost približnog poklapanja}
 
-Algoritam za približno poklapanje prolazi kroz sve podniske dužine $|Pattern|$, kojih ima $|Text| - |Pattern| + 1$. Za svaku od njih računa se Hamingova distanca, što zahteva $O(|Pattern|)$ operacija.
+Algoritam za približno poklapanje prolazi kroz sve podniske dužine $|Pattern|$, kojih ima $|Text| - |Pattern| + 1$. Za svaku od njih računa se Hamingovo rastojanje, što zahteva $O(|Pattern|)$ operacija.
 
 Zbog toga ukupna vremenska složenost iznosi:
 \[
@@ -1508,11 +1502,11 @@ Ova složenost je linearna u odnosu na dužinu teksta, ali zavisi i od dužine o
 
 
 
-\subsection{Problem čestih reči sa propustima (\textit{Frequent Words with Mismatches})}
+\subsection{Problem čestih reči sa propustima}
 
-Približno poklapanje i približno prebrojavanje pojavljivanja predstavljaju osnovu za definisanje složenijeg problema. Sada cilj nije pronaći poklapanje sa datim obrascem, već pronaći najčešće obrasce kada su dozvoljena odstupanja.
+Približno poklapanje i približno prebrojavanje pojavljivanja obrazaca predstavljaju osnovu za definisanje složenijeg problema. Sada cilj nije pronaći poklapanje sa datim obrascem, već pronaći najčešće obrasce kada su dozvoljena odstupanja.
 
-Drugim rečima, ako za dati obrazac možemo da izračunamo koliko puta se pojavljuje u tekstu sa najviše $d$ razlika, tada možemo pokušati da pronađemo one obrasce koji maksimizuju ovu vrednost. Na taj način dolazimo do problema čestih reči sa propustima.
+Drugim rečima, ako za dati obrazac možemo da izračunamo koliko puta se pojavljuje u tekstu sa najviše $d$ razlika, tada možemo pokušati da pronađemo one obrasce koji maksimizuju ovu vrednost. Na taj način dolazimo do problema čestih reči sa propustima (eng. \textit{Frequent Words with Mismatches}).
 
 Ovaj problem se može definisati na sledeći način:
 
@@ -1523,14 +1517,14 @@ Ovaj problem se može definisati na sledeći način:
     $ApproximatePatternCount(Text, Pattern, d)$
 \end{itemize}
 
-Za razliku od standardnog problema čestih reči, ovde frekvencija obrasca ne zavisi od broja tačnih poklapanja, već od broja približnih poklapanja. To znači da obrazac sa propustima  koji je najčešći ne mora nužno da se pojavljuje u tekstu u svom tačnom obliku. Upravo to čini ovaj problem složenijim i istovremeno biološki značajnijim.
+Za razliku od standardnog problema čestih reči, ovde frekvencija obrasca ne zavisi od broja tačnih poklapanja, već od broja približnih poklapanja. To znači da obrazac sa propustima  koji je najčešći ne mora nužno da se pojavljuje u tekstu u svom originalnom obliku. Upravo to čini ovaj problem složenijim i istovremeno biološki značajnijim.
 
 
 
 \subsection{$d$-susedstvo obrasca}
 
 
-Kod problema tačnih poklapanja bilo je dovoljno posmatrati one $k$-grame koji se zaista pojavljuju u tekstu. Ovde to više nije slučaj. Razlog je to što obrazac sa propustima koji na kraju bude najčešći ne mora biti eksplicitno prisutan u tekstu. Moguće je da se više podniski iz teksta razlikuje od nekog zajedničkog motiva u jednoj ili dve pozicije, i da upravo taj „centralni“ motiv ima najveću približnu frekvenciju, iako se sam nikada ne pojavljuje tačno. Zbog toga je potrebno razmotriti ne samo postojeće podniske, već i njihove varijacije.
+Kod problema tačnih poklapanja, prilikom razmatranje kandidata za motiv (eng. \textit{pattern}), bilo je dovoljno posmatrati one $k$-grame koji se zaista pojavljuju u tekstu. Ovde to više nije slučaj. Razlog za to je što se k-gram koji ima najveći broj približnih pojavljivanja ne mora pojaviti u tekstu. Moguće je da se više podniski iz teksta razlikuje od nekog zajedničkog motiva u jednoj ili dve pozicije, i da upravo taj „centralni“ motiv ima najveću približnu frekvenciju, iako se s\^am nikada ne pojavljuje u svom originalnom obliku. Zbog toga je potrebno razmotriti ne samo postojeće podniske, već i njihove varijacije.
 
 
 Za dati obrazac $Pattern$, njegovo $d$-susedstvo, označeno sa $Neighbors(Pattern, d)$, predstavlja skup svih sekvenci iste dužine koje se razlikuju od $Pattern$ u najviše $d$ pozicija.
@@ -1541,7 +1535,7 @@ Pojam susedstva je ključan zato što omogućava da se pretraga ograniči na sku
 
 \subsubsection{Generisanje $d$-susedstva}
 
-Funkcija \texttt{Neighbors(Pattern, d)} može se implementirati rekurzivno. Osnovna ideja rekurzije zasniva se na tome da se prvo generišu susedi sufiksa obrasca, a zatim se u zavisnosti od njihove Hamingove distance dodaje odgovarajući simbol na početak.Na ovaj način se korak po korak generišu sve sekvence koje zadovoljavaju uslov da se razlikuju od početnog obrasca u najviše $d$ pozicija. Pseudokod prikazan je u Algoritmu \ref{alg:neighbors}.
+Funkcija \texttt{Neighbors(Pattern, d)} može se implementirati rekurzivno. Osnovna ideja rekurzije zasniva se na tome da se prvo generišu "direktni" susedi sufiksa obrasca, odnosno oni na rastojanju 1, a zatim se u zavisnosti od njihovog Hamingovog rastojanja dodaje odgovarajući simbol na početak. Na ovaj način se korak po korak generišu sve sekvence koje zadovoljavaju uslov da se razlikuju od početnog obrasca u najviše $d$ pozicija. Pseudokod prikazan je u Algoritmu \ref{alg:neighbors}.
 
 \begin{algorithm}[h]
 \caption{Neighbors}
@@ -1582,13 +1576,13 @@ $SuffixNeighbors \gets Neighbors(Suffix(Pattern), d)$\;
 
 Ako je broj dozvoljenih odstupanja jednak nuli, jedini sused obrasca jeste sam obrazac. Ako je dužina obrasca jednaka 1, tada su svi simboli iz alfabeta mogući susedi.
 
-U opštem slučaju najpre se rekurzivno generišu susedi sufiksa obrasca. Zatim se za svaki takav sused proverava da li je njegova Hamingova distanca od originalnog sufiksa strogo manja od $d$. Ako jeste, na početak se može dodati bilo koji simbol, jer još uvek postoji prostor za dodatnu razliku. U suprotnom, mora se zadržati originalni prvi simbol, kako ukupan broj odstupanja ne bi prešao dozvoljenu vrednost.
+U opštem slučaju najpre se rekurzivno generišu susedi maksimalnog sufiksa obrasca, koji se dobija uklanjanjem prvog karaktera. Zatim se za svaki takav sused proverava da li je njegovo Hamingovo rastojanje od originalnog sufiksa strogo manje od $d$. Ako jeste, na početak se može dodati bilo koji simbol, jer još uvek postoji prostor za dodatnu razliku. U suprotnom, mora se zadržati originalni prvi simbol, kako ukupan broj odstupanja ne bi prešao dozvoljenu vrednost.
 
 \subsection{Algoritam za česte reči sa propustima}
 
 Jedan od efikasnijih pristupa za rešavanje problema čestih reči sa propustima zasniva se na tome da se ne razmatra svih $4^k$ mogućih obrazaca, već samo oni koji pripadaju susedstvu nekog $k$-grama iz teksta.
 
-U tu svrhu koriste se nizovi \textit{\texttt{Close}} i \textit{\texttt{FrequencyArray}}. Niz \textit{\texttt{Close}} označava da li je dati obrazac kandidat, dok \textit{\texttt{FrequencyArray}} čuva broj njegovih približnih pojavljivanja. Algoritam \ref{alg:frequent_words_with_mismatches} prikazuje pseudokod ove funkcije \textit{Frequent Words with Mismatches}.
+U tu svrhu koriste se nizovi \textit{\texttt{Close}} i \textit{\texttt{FrequencyArray}}. Niz \textit{\texttt{Close}} sadrži identifikatore kandidata, dok \textit{\texttt{FrequencyArray}} čuva broj njihovih približnih pojavljivanja. Algoritam \ref{alg:frequent_words_with_mismatches} prikazuje pseudokod ove funkcije \textit{Frequent Words with Mismatches}.
 
 \begin{algorithm}[h]
 \caption{Frequent Words with Mismatches}
@@ -1642,7 +1636,7 @@ U drugom delu algoritma prolazi se kroz sve moguće indekse. Ako je neki obrazac
 
 Na kraju se pronalazi maksimalna vrednost u nizu frekvencija i izdvajaju se svi obrasci koji postižu tu vrednost.
 
-Važno je uočiti da se funkcija \textit{\texttt{ApproximatePatternCount}} ne poziva za svih $4^k$ mogućih obrazaca, već samo za one koji pripadaju susedstvu nekog obrasca iz teksta. Time se postiže značajna ušteda u odnosu na potpuno iscrpnu pretragu.
+Važno je uočiti da se funkcija \textit{\texttt{ApproximatePatternCount}} ne poziva za svih $4^k$ mogućih k-grama, već samo za one koji pripadaju susedstvu nekog obrasca iz teksta. Time se postiže značajna ušteda u odnosu na iscrpnu pretragu.
 
 \subsection{Uzimanje u obzir obrnutih komplementa}
 
@@ -1674,7 +1668,7 @@ Ova formulacija predstavlja realističniji model biološkog problema, jer uzima 
 
 \subsection{Vremenska složenost}
 
-Najveći izazov ovog pristupa jeste dimenzija $d$-susedstva. Za dati obrazac dužine $k$, broj suseda raste sa povećanjem broja dozvoljenih odstupanja $d$. Taj broj se može precizno izraziti formulom:
+Najveći izazov ovog pristupa jeste generisanje $d$-susedstva, što zavisi od njegove dimenzije. Za dati obrazac dužine $k$, broj suseda raste sa povećanjem broja dozvoljenih odstupanja $d$. Taj broj se može precizno izraziti formulom:
 
 \[
 \sum_{i=0}^{d} \binom{k}{i} \cdot 3^i,
@@ -1687,7 +1681,7 @@ Zbog toga, generisanje $d$-susedstva za sve $k$-grame u tekstu, kojih ima pribli
 O(|Text| \cdot 3^d \cdot k^d)
 \]
 
-Dodatni trošak nastaje u drugoj fazi algoritma, gde se za svakog različitog kandidata računa vrednost funkcije \textit{\texttt{ApproximatePatternCount}}. Neka je broj različitih kandidata označen sa $C$. Kako funkcija \textit{\texttt{ApproximatePatternCount}} ima vremensku složenost $O(|Text| \cdot k)$, ukupni trošak ove faze iznosi:
+Dodatni trošak nastaje u drugoj fazi algoritma, gde se za svakog kandidata računa vrednost funkcije \textit{\texttt{ApproximatePatternCount}}. Neka je broj različitih kandidata označen sa $C$. Kako funkcija \textit{\texttt{ApproximatePatternCount}} ima vremensku složenost $O(|Text| \cdot k)$, ukupni trošak ove faze iznosi:
 
 \[
 O(C \cdot |Text| \cdot k),
@@ -1768,9 +1762,9 @@ $maxCount \gets$ maksimalna vrednost u $FrequencyMap$\;
 
 \subsubsection{Prednosti pristupa}
 
-Glavna prednost ovog pristupa je smanjenje memorijske potrošnje, jer se izbegava korišćenje nizova dimenzije $4^k$. Umesto toga, čuvaju se samo oni obrasci koji su zaista relevantni kandidati.
+Glavna prednost ovog pristupa je smanjenje memorijske složenosti, jer se izbegava korišćenje nizova dimenzije $4^k$. Umesto toga, čuvaju se samo oni obrasci koji su zaista relevantni kandidati.
 
-Pored toga, izbegava se i prolazak kroz sve moguće obrasce, pa se fokus stavlja isključivo na one koji potiču iz stvarnih delova teksta. Iako dominantni deo vremenske složenosti ostaje vezan za generisanje $d$-susedstva i računanje funkcije \textit{\texttt{ApproximatePatternCount}} za različite kandidate, ovaj pristup je u praksi memorijski efikasniji i jednostavniji za implementaciju.
+Pored toga, izbegava se i prolazak kroz sve moguće obrasce, pa se fokus stavlja isključivo na obrasce koji se javljaju u tekstu i njihove susede. Iako dominantni deo vremenske složenosti ostaje vezan za generisanje $d$-susedstva i računanje funkcije \textit{\texttt{ApproximatePatternCount}} za različite kandidate, ovaj pristup je u praksi memorijski efikasniji i jednostavniji za implementaciju.
 
 
 
@@ -1778,7 +1772,7 @@ Pored toga, izbegava se i prolazak kroz sve moguće obrasce, pa se fokus stavlja
 
 \section{Ograničenja i otvoreni problemi}
 
-U prethodnim poglavljima predstavljeni su algoritmi za analizu DNK sekvenci zasnovani na frekvenciji pojavljivanja podniski, njihovom lokalnom grupisanju i dozvoljenim odstupanjima. Iako ovi pristupi pružaju značajne uvide i omogućavaju identifikaciju potencijalno važnih obrazaca, njihova primena u realnim biološkim podacima otkriva niz ograničenja.
+U prethodnim poglavljima predstavljeni su algoritmi za analizu DNK sekvenci zasnovani na učestalosti podniski, njihovom lokalnom grupisanju i dozvoljenim odstupanjima. Iako ovi pristupi pružaju značajne uvide i omogućavaju identifikaciju potencijalno važnih obrazaca, njihova primena u realnim biološkim podacima otkriva niz ograničenja.
 
 U nastavku ćemo razmotriti dodatne aspekte i otvorene probleme koji proizlaze iz ovih metoda.
 
@@ -1792,9 +1786,7 @@ Uvođenjem dozvoljenih odstupanja povećava se fleksibilnost algoritma, ali isto
 
 \subsubsection{Kombinatorna složenost i praktični izazovi}
 
-Jedan od glavnih izazova jeste dimenzija prostora pretrage. Broj mogućih $k$-grama iznosi $4^k$, a uz dozvoljena odstupanja dodatno raste zbog generisanja $d$-susedstva.
-
-Ova kombinatorna eksplozija čini problem računarski zahtevnim, posebno za veće vrednosti parametara $k$ i $d$. Iako optimizacije, poput korišćenja niza frekvencija i ograničavanja na relevantne kandidate, smanjuju broj operacija, algoritmi i dalje mogu biti spori za velike genomske sekvence.
+Jedan od glavnih izazova jeste velika dimenzija prostora pretrage, budući da broj mogućih k-grama iznosi $4^k$. Ova kombinatorna eksplozija čini problem računarski zahtevnim, posebno za veće vrednosti parametara $k$ i $d$, prilikom generisanja $d$-susedstva. Iako optimizacije, poput korišćenja niza frekvencija i ograničavanja na relevantne kandidate, smanjuju broj operacija, algoritmi i dalje mogu biti spori za velike genomske sekvence.
 
 \subsubsection{Statistički aspekti i verovatnoća obrazaca}
 
@@ -1850,7 +1842,7 @@ Iako predstavljeni algoritmi čine osnovu za analizu DNK sekvenci, njihova ogran
 
 U ovom poglavlju opisana je elektronska lekcija razvijena kao praktični deo rada. Lekcija je namenjena interaktivnom prikazu algoritama koji se koriste pri analizi DNK sekvenci i pronalaženju potencijalnog početnog regiona replikacije. Pored teorijskog objašnjenja pojmova, aplikacija omogućava korisniku da unese DNK sekvencu, pokrene odgovarajuće algoritme i prati njihove rezultate kroz vizuelni prikaz.
 
-Elektronska lekcija se sastoji iz dve komponente: klijentske i serverske. Klijentska komponenta predstavlja korisnički interfejs aplikacije i implementirana je pomoću \textbf{\textit{Next.js}} \cite{nextjs} okvira, uz korišćenje biblioteka \textbf{\textit{React}} \cite{react} i \textbf{\textit{Node.js}} \cite{node}. Serverska komponenta implementirana je u programskom jeziku \textbf{\textit{Python}} \cite{python}, uz korišćenje \textbf{\textit{FastAPI}}\cite{fastapi} okvira. Izvorni kod aplikacije nalazi se u javnom \emph{\textit{GitHub}} \cite{github} repozitorijumu na adresi:
+Elektronska lekcija se sastoji iz dve komponente: klijentske i serverske. Klijentska komponenta predstavlja korisnički interfejs aplikacije i implementirana je pomoću \textbf{\textit{Next.js}} \cite{nextjs} veb okvira, uz korišćenje biblioteka \textbf{\textit{React}} \cite{react} i \textbf{\textit{Node.js}} \cite{node}. Serverska komponenta implementirana je u programskom jeziku \textbf{\textit{Python}} \cite{python}, uz korišćenje \textbf{\textit{FastAPI}}\cite{fastapi} okvira. Izvorni kod aplikacije nalazi se u javnom \emph{\textit{GitHub}} \cite{github} repozitorijumu na adresi:
 \begin{verbatim}
 https://github.com/dunjaci/master-rad
 \end{verbatim}
@@ -1879,9 +1871,9 @@ Komunikacija između klijentske i serverske komponente ostvaruje se slanjem HTTP
 
 Klijentski deo aplikacije implementiran je korišćenjem \textbf{\textit{Next.js}} okvira.\textit{ Next.js} omogućava izradu \textit{React} aplikacija sa organizovanom strukturom stranica, jednostavnim rutiranjem i podrškom za produkcioni \textit{build}. Za stilizovanje korisničkog interfejsa korišćen je \textbf{\textit{Tailwind CSS}} \cite{tailwind}, što omogućava jednostavno kreiranje responzivnih i preglednih veb stranica.
 
-Serverski deo aplikacije implementiran je pomoću \textbf{\textit{FastAPI}} okvira. \textit{FastAPI} je pogodan za izradu \textit{REST API-ja} jer omogućava jednostavno definisanje ruta, validaciju ulaznih podataka i automatski generisanu dokumentaciju API-ja. U ovoj aplikaciji serverska komponenta sadrži implementacije algoritama i vraća rezultate klijentskoj komponenti.
+Serverski deo aplikacije implementiran je pomoću \textbf{\textit{FastAPI}} okvira. \textit{FastAPI} je pogodan za izradu \textit{REST API-ja} jer omogućava jednostavno definisanje ruta, validaciju ulaznih podataka i automatski generisanu dokumentaciju programskog interfejsa. U ovoj aplikaciji serverska komponenta sadrži implementacije algoritama i vraća rezultate klijentskoj komponenti.
 
-Za kontrolu verzija i čuvanje izvornog koda korišćen je \textbf{\textit{Git}}, dok je repozitorijum postavljen na \textbf{\textit{GitHub}}. Za javno postavljanje aplikacije korišćene su platforme \textbf{\textit{Render}} \cite{render} i \textbf{\textit{Vercel}} \cite{vercel}. Serverska komponenta postavljena je na \textit{Render}, dok je klijentska komponenta postavljena na \textit{Vercel}.
+Za kontrolu verzija i čuvanje izvornog koda korišćen je \textbf{\textit{Git}} sistem, dok je repozitorijum postavljen na \textbf{\textit{GitHub}} platformu. Za javno postavljanje aplikacije korišćene su platforme \textbf{\textit{Render}} \cite{render} i \textbf{\textit{Vercel}} \cite{vercel}. Serverska komponenta postavljena je na \textit{Render}, dok je klijentska komponenta postavljena na \textit{Vercel}.
 
 
 \section{Pokretanje aplikacije u lokalnom okruženju}
@@ -1942,7 +1934,7 @@ Serverska komponenta postavljena je na platformu \textit{Render} kao \emph{\text
 \begin{figure}[h]
 \centering
 \includegraphics[width=1\textwidth]{images/depoloy_render.png}
-\caption{Podešavanja za deploy serverske komponente na Render platformu}
+\caption{Podešavanja za postavljanje (eng. \textit{deploy}) serverske komponente na Render platformu}
 \label{fig:render_deploy}
 \end{figure}
 
@@ -1956,7 +1948,7 @@ Build Command: pip install -r requirements.txt
 Start Command: uvicorn main:app --host 0.0.0.0 --port $PORT
 \end{verbatim}
 
-Parametar \texttt{Root Directory} označava da se serverska komponenta nalazi u direktorijumu \texttt{backend}. Komanda za izgradnju instalira sve zavisnosti navedene u datoteci \texttt{requirements.txt}, dok komanda za pokretanje startuje \textit{FastAPI} aplikaciju.
+Parametar \texttt{Root Directory} označava da se serverska komponenta nalazi u direktorijumu \texttt{backend}. Komanda za pripremu (eng. \textit{build command}) instalira sve zavisnosti navedene u datoteci \texttt{requirements.txt}, dok komanda za pokretanje startuje \textit{FastAPI} aplikaciju.
 
 Nakon uspešnog postavljanja, \textit{Render} generiše javni URL serverske komponente:
 \begin{verbatim}
@@ -1980,7 +1972,7 @@ Install Command: npm install
 \begin{figure}[h]
 \centering
 \includegraphics[width=0.75\textwidth]{images/vercel_deploy_1.png}
-\caption{Podešavanja za deploy klijentske komponente na Vercel platformu}
+\caption{Podešavanja za postavljanje (eng. \textit{deploy}) klijentske komponente na Vercel platformu}
 \label{fig::vercel_deploy}
 \end{figure}
 
@@ -2046,7 +2038,7 @@ Početna stranica predstavlja ulaznu tačku aplikacije (Slika \ref{fig:pocetna_s
 
 \subsection{Teorijske osnove}
 
-Stranica Teorijske osnove, prikazana na Slici \ref{fig:teorijske_osnove}, uvodi biološke pojmove potrebne za razumevanje algoritama. Objašnjeni su struktura DNK molekula, proces replikacije, početni region replikacije, DnkA boksovi i pojam obrnutog komplementa. Klikom na sekciju prikazuju se interaktivne kartice sa detaljnim objašnjenjima  pojmova. Ovaj deo lekcije povezuje biološku motivaciju sa algoritamskim problemima koji se kasnije obrađuju.
+Stranica Teorijske osnove, prikazana na Slici \ref{fig:teorijske_osnove}, uvodi biološke pojmove potrebne za razumevanje algoritama. Objašnjena je struktura DNK molekula, proces replikacije, početni region replikacije, DnkA boksovi i pojam obrnutog komplementa. Klikom na sekciju prikazuju se interaktivne kartice sa detaljnim objašnjenjima  pojmova. Ovaj deo lekcije povezuje biološku motivaciju sa algoritamskim problemima koji se kasnije obrađuju.
 
 \begin{figure}[H]
 \centering
@@ -2072,7 +2064,7 @@ Na ovoj stranici predstavljeni su naivni algoritam, optimizacija nizom frekvenci
 
 Stranica Pronalaženje grupa prikazuje traženje k-grama koji formiraju \((L,t)\)-grupe. K-gram formira grupu ukoliko postoji segment genoma dužine \(L\) u kojem se taj k-gram pojavljuje najmanje \(t\) puta.
 
-Korisnik unosi DNK sekvencu i parametre \texttt{k}, \texttt{L} i \texttt{t}. Aplikacija prikazuje prozore dužine \(L\), frekvencije k-grama u trenutnom prozoru i k-grame koji zadovoljavaju zadati prag. Pored osnovnog pristupa, prikazana je i optimizacija pomoću kliznog prozora, gde se pri svakom pomeranju prozora ažuriraju samo vrednosti za k-gram koji izlazi i k-gram koji ulazi u posmatrani segment. Vizuelizacija ovog pristupa prikazana je na Slici \ref{fig:pronalazenje_grupa}.
+Korisnik unosi DNK sekvencu i parametre \texttt{k}, \texttt{L} i \texttt{t}. Aplikacija prikazuje prozore dužine \(L\), frekvencije k-grama u trenutnom prozoru i k-grame koji zadovoljavaju zadati prag. Pored osnovnog pristupa, prikazana je i optimizacija pomoću kliznog prozora, gde se pri svakom pomeranju prozora ažuriraju samo vrednosti za k-grame na granicama posmatranog segmenta (odnosno vrednosti za k-gram koji postaje obuhvaćen prozorom / prestaje da bude obuhvaćen prozorom). Vizuelizacija ovog pristupa prikazana je na Slici \ref{fig:pronalazenje_grupa}.
 
 \begin{figure}[H]
 \centering
@@ -2083,9 +2075,9 @@ Korisnik unosi DNK sekvencu i parametre \texttt{k}, \texttt{L} i \texttt{t}. Apl
 
 \subsection{\textit{GC-skew }dijagram}
 
-Stranica \textit{GC-skew} dijagram prikazuje algoritam za izračunavanje \textit{GC-skew} vrednosti duž DNK sekvence. Ova vrednost prati razliku između broja baza G i C u prefiksu sekvence. Pozicije na kojima GC-skew funkcija dostiže minimum mogu predstavljati kandidate za početni region replikacije.
+Stranica \textit{GC-skew} dijagram prikazuje algoritam za izračunavanje \textit{GC-skew} vrednosti duž DNK sekvence. Ova vrednost prati razliku između broja baza G i C od početka sekvence do tekuće pozicije. Pozicije na kojima GC-skew funkcija dostiže minimum mogu predstavljati kandidate za početni region replikacije.
 
-Korisnik unosi DNK sekvencu, a aplikacija prikazuje konstrukciju niza vrednosti korak po korak. Vizuelni prikaz obuhvata trenutnu bazu, trenutnu vrednost funkcije, grafički prikaz \textit{GC-skew} dijagrama i označene pozicije minimuma (Slika \ref{fig:gc_skew}).
+Korisnik unosi DNK sekvencu, a aplikacija prikazuje konstrukciju niza vrednosti korak po korak. Vizuelni prikaz obuhvata trenutnu nukleotidnu bazu, trenutnu vrednost funkcije, grafički prikaz \textit{GC-skew} dijagrama i označene pozicije minimuma (Slika \ref{fig:gc_skew}).
 
 \begin{figure}[H]
 \centering
@@ -2096,18 +2088,18 @@ Korisnik unosi DNK sekvencu, a aplikacija prikazuje konstrukciju niza vrednosti 
 
 \subsection{Približno poklapanje i česte reči sa propustima}
 
-Stranica Propusti obuhvata više povezanih algoritamskih pojmova: Hamingovu distancu, približno poklapanje, d-susedstvo, česte reči sa propustima i obrnute komplemente. Ovi pojmovi su važni jer se biološki značajni motivi ne moraju uvek pojaviti u potpuno istom obliku. Mutacije mogu promeniti pojedinačne nukleotide, dok motiv i dalje može zadržati svoju funkciju.
+Stranica Propusti obuhvata više povezanih algoritamskih pojmova: Hamingovo rastojanje, približno poklapanje (pod)sekvenci, Hamingovo susedstvo sekvence/k-grama, česte reči sa propustima i obrnute komplemente DNK (pod)sekvenci/k-grama. Ovi pojmovi su važni jer se biološki značajni motivi ne moraju uvek pojaviti u potpuno istom obliku. Mutacije mogu promeniti pojedinačne nukleotide, dok motiv i dalje može zadržati svoju funkciju.
 
-Kao što je prikazano na Slici \ref{fig:hamming}, za Hamingovu distancu korisnik unosi dve sekvence iste dužine, a aplikacija prikazuje broj pozicija na kojima se one razlikuju.
+Kao što je prikazano na Slici \ref{fig:hamming}, za Hamingovo rastojanje korisnik unosi dve sekvence iste dužine, a aplikacija prikazuje broj pozicija na kojima se one razlikuju.
 
 \begin{figure}[H]
 \centering
 \includegraphics[width=0.75\textwidth]{images/hamming_visual.png}
-\caption{Interaktivni prikaz računanja Hamingove distance za dve sekvence}
+\caption{Interaktivni prikaz računanja Hamingovog rastojanja za dve sekvence}
 \label{fig:hamming}
 \end{figure} 
 
-Kod približnog poklapanja korisnik unosi tekst, obrazac i dozvoljeni broj odstupanja, nakon čega se prikazuju pozicije na kojima se obrazac pojavljuje uz najviše \(d\) razlika. Deo za d-susedstvo prikazuje skup svih sekvenci koje su od zadatog obrasca udaljene najviše \(d\) pozicija (Slika \ref{fig:d}).
+Kod algoritma sa približnim poklapanjima korisnik unosi tekst, obrazac i dozvoljeni broj odstupanja, nakon čega se prikazuju pozicije na kojima se obrazac pojavljuje uz najviše \(d\) razlika. Deo za d-susedstvo prikazuje skup svih sekvenci koje su od zadatog obrasca udaljene najviše \(d\) pozicija (Slika \ref{fig:d}).
 
 \begin{figure}[H]
 \centering
@@ -2130,13 +2122,23 @@ Na istoj stranici obrađuju se i česte reči sa propustima, gde se traže obras
 Stranica Literatura sadrži izvore korišćene za izradu teorijskog i algoritamskog dela lekcije. Pored literature iz oblasti molekularne biologije i bioinformatike, na ovoj stranici nalazi se i link ka \textit{GitHub} repozitorijumu u kojem se nalaze izvorni kod aplikacije, prateći projektni fajlovi i tekstualna verzija rada.
 
 
+\section{Upotreba alata zasnovanih na veštačkoj inteligenciji}
+
+Tokom izrade ovog rada korišćeni su \textit{Microsoft Copilot} i \textit{ChatGPT} kao pomoćni alati. 
+\textit{ChatGPT} korišćen je prvenstveno tokom razvoja programske implementacije, 
+za generisanje i unapređenje delova programskog koda, kao i za pomoć pri 
+otklanjanju grešaka i pronalaženju odgovarajućih implementacionih rešenja. 
+\textit{Microsoft Copilot} je korišćen za doradu, preformulisanje i ujednačavanje stila pojedinih delova teksta.
+
+Sadržaj i predlozi dobijeni korišćenjem alata zasnovanih na veštačkoj inteligenciji nisu preuzimani bez dodatne provere. Ispravnost generisanog i izmenjenog programskog koda proveravana je testiranjem implementiranih funkcionalnosti i poređenjem dobijenih rezultata sa očekivanim rezultatima. Teorijske tvrdnje i objašnjenja proveravani su na osnovu stručne literature navedene u bibliografiji, dok su svi sadržaji uključeni u rad dodatno provereni, korigovani i prilagođeni temi master rada.
+
 % ------------------------------------------------------------------------------
 \chapter{Zaključak}
 % ------------------------------------------------------------------------------
 
 U ovom radu analizirani su algoritamski pristupi za identifikaciju početnog regiona replikacije u DNK sekvencama. Kroz prikaz različitih algoritama pokazano je na koji način se analiza učestalosti podniski, njihove lokalne raspodele i statističkih karakteristika genoma može iskoristiti za pronalaženje kandidata za \textit{oriC} region.
 
-Za svaki obrađeni algoritam analizirani su princip rada, složenost, kao i njegove prednosti i ograničenja. Prikazane optimizacije pokazale su kako se odgovarajućim izborom struktura podataka i algoritamskih tehnika može značajno unaprediti efikasnost obrade DNK sekvenci.
+Za svaki obrađeni algoritam analizirana je osnovna ideja algoritma, složenost, kao i njegove prednosti i ograničenja. Prikazane optimizacije pokazale su kako se odgovarajućim izborom struktura podataka i algoritamskih tehnika može značajno unaprediti efikasnost obrade DNK sekvenci.
 
 Praktični doprinos ovog rada predstavlja razvoj elektronske lekcije koja objedinjuje teorijska objašnjenja obrađenih algoritama i njihovu interaktivnu primenu kroz veb aplikaciju. Implementirana aplikacija omogućava korisnicima da pokreću algoritme nad proizvoljnim ulaznim podacima, prate njihovo izvršavanje korak po korak i analiziraju dobijene rezultate, čime se olakšava razumevanje njihovog rada i primene u bioinformatici.
 
